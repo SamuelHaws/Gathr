@@ -35,6 +35,7 @@ export class NavbarComponent implements OnInit {
       cssClass: 'alert-success',
       timeout: 3500
     });
+    this.isLoggedIn = false;
     this.router.navigate(['/login']);
   }
 }
