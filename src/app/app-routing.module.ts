@@ -6,11 +6,17 @@ import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { AddGroupComponent } from './components/add-group/add-group.component';
 
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
+  {
+    path: 'add-group',
+    component: AddGroupComponent,
+    canActivate: [AuthGuard]
+  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
