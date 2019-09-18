@@ -13,9 +13,10 @@ import { FlashMessagesService } from 'angular2-flash-messages';
   styleUrls: ['./add-group.component.css']
 })
 export class AddGroupComponent implements OnInit {
-  activeUserID: string;
+  // activeUserID: string;
   group: Group = {
     groupname: '',
+    description: '',
     public: true,
     owner: ''
     // chats: [],
@@ -34,9 +35,7 @@ export class AddGroupComponent implements OnInit {
   ngOnInit() {
     this.authService.getAuth().subscribe(auth => {
       if (auth) {
-        this.activeUserID = auth.uid; // get active user id
-        console.log(this.activeUserID);
-        this.group.owner = this.activeUserID;
+        this.group.owner = auth.uid; // get active user id
       } else {
         console.error('NO AUTH ON ADDGROUP');
       }
@@ -46,16 +45,16 @@ export class AddGroupComponent implements OnInit {
   // TODO: form validation
   onSubmit({ value, valid }: { value: Group; valid: boolean }) {
     if (!valid) {
-      this.flashMessage.show('DO IT RIGHT', {
+      this.flashMessage.show('Form values invalid', {
         cssClass: 'alert-danger',
         timeout: 3500
       });
     } else {
-      // Add validated value name to this.group
-      console.log(this.group);
+      // Add validated values to this.group
       this.group.groupname = value.groupname;
+      this.group.description = value.description;
+      // this.group.public = value.public;
       // Add the group to db
-      console.log(this.group);
       this.groupService.addGroup(this.group);
       this.flashMessage.show('New group added!', {
         cssClass: 'alert-success',

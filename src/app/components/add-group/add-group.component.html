@@ -18,14 +18,21 @@
         <input type="text" class="form-control" name="groupname" #groupname="ngModel" [(ngModel)]="group.groupname"
           required>
       </div>
+      <div class="form-group">
+        <label for="description">Group Name</label>
+        <textarea class="form-control" name="description" #description="ngModel" [(ngModel)]="group.description"
+          required></textarea>
+      </div>
       <div class="form-check pb-2">
         <label class="form-check-label">
-          <input type="radio" name="publicprivateradio" [checked]="group.public" (change)="group.public = true"> Public
+          <input type="radio" value="true" name="publicprivateradio" [checked]="group.public === true"
+            (change)="group.public = true"> Public
         </label>
       </div>
       <div class="form-check">
         <label class="form-check-label">
-          <input type="radio" name="publicprivateradio" [checked]="group.public" (change)="group.public = false">
+          <input type="radio" value="false" name="publicprivateradio" [checked]="group.public === false"
+            (change)="group.public = false">
           Private
         </label>
       </div>

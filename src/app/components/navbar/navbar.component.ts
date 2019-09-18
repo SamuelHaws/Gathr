@@ -23,7 +23,6 @@ export class NavbarComponent implements OnInit {
       if (auth) {
         this.isLoggedIn = true;
         this.loggedInUser = auth.email;
-        console.log(auth);
       } else {
         this.isLoggedIn = false;
       }

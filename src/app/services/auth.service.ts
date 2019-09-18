@@ -6,15 +6,12 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserUid: string;
-
   constructor(private afAuth: AngularFireAuth) {}
 
   login(email: string, password: string) {
     return new Promise((resolve, reject) => {
       this.afAuth.auth.signInWithEmailAndPassword(email, password).then(
         userData => {
-          this.currentUserUid = userData.user.uid;
           resolve(userData);
         },
         err => reject(err)
@@ -26,16 +23,11 @@ export class AuthService {
     return new Promise((resolve, reject) => {
       this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(
         userData => {
-          this.currentUserUid = userData.user.uid;
           resolve(userData);
         },
         err => reject(err)
       );
     });
-  }
-
-  getCurrentUserUid() {
-    return this.currentUserUid;
   }
 
   getAuth() {
