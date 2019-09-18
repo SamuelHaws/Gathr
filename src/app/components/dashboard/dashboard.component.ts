@@ -4,6 +4,7 @@ import { GroupService } from 'src/app/services/group.service';
 
 import { User } from '../../models/User';
 import { Group } from '../../models/Group';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,26 +13,38 @@ import { Group } from '../../models/Group';
 })
 export class DashboardComponent implements OnInit {
   users: User[];
+  user: User;
   groups: Group[];
   group: Group;
 
   constructor(
-    private usersService: UserService,
-    private groupsService: GroupService
+    private authService: AuthService,
+    private userService: UserService,
+    private groupService: GroupService
   ) {}
 
   ngOnInit() {
-    this.usersService.getUsers().subscribe(users => {
+    console.log('__GETAUTH__');
+    console.log(this.authService.getAuth());
+    console.log('__GETAUTH__');
+    console.log('__GETUID__');
+    console.log(this.authService.getCurrentUserUid());
+    console.log('__GETUID__');
+    this.userService.getUsers().subscribe(users => {
       this.users = users;
       console.log(this.users);
     });
-    this.groupsService.getGroups().subscribe(groups => {
+    this.groupService.getGroups().subscribe(groups => {
       this.groups = groups;
       console.log(this.groups);
     });
-    this.groupsService.getGroup('mRGdvVcYRVbNuJbCIdbt').subscribe(group => {
+    this.groupService.getGroup('mRGdvVcYRVbNuJbCIdbt').subscribe(group => {
       this.group = group;
       console.log(this.group);
+    });
+    this.userService.getUser('mRGdvVcYRVbNuJbCIdbt').subscribe(user => {
+      this.user = user;
+      console.log(this.user);
     });
   }
 }

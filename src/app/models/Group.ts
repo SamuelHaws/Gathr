@@ -4,8 +4,8 @@ import { Post } from './Post';
 export interface Group {
   id?: string;
   groupname?: string;
-  inviteonly?: boolean;
+  public?: boolean;
   owner?: string;
-  chats?: Chat[];
-  posts?: string[];
+  // chats?: Chat[];
+  // posts?: string[];
 }

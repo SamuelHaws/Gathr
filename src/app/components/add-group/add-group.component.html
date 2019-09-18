@@ -14,10 +14,23 @@
   <div class="card-body">
     <form #groupForm="ngForm" (ngSubmit)="onSubmit(groupForm)">
       <div class="form-group">
-        <label for="groupName">Group Name</label>
-        <input type="text" class="form-control" name="groupName" #groupName="ngModel" [(ngModel)]="group.groupName"
+        <label for="groupname">Group Name</label>
+        <input type="text" class="form-control" name="groupname" #groupname="ngModel" [(ngModel)]="group.groupname"
           required>
       </div>
+      <div class="form-check pb-2">
+        <label class="form-check-label">
+          <input type="radio" name="publicprivateradio" [checked]="group.public" (change)="group.public = true"> Public
+        </label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label">
+          <input type="radio" name="publicprivateradio" [checked]="group.public" (change)="group.public = false">
+          Private
+        </label>
+      </div>
+
+      <input type="submit" value="Submit" class="btn btn-primary btn-block mt-3">
     </form>
   </div>
 </div>

@@ -24,7 +24,7 @@ export class GroupService {
     );
   }
 
-  newGroup(group: Group) {
+  addGroup(group: Group) {
     this.groupsCollection.add(group);
   }
 

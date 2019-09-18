@@ -13,7 +13,7 @@ import { User } from '../models/User';
 })
 export class UserService {
   usersCollection: AngularFirestoreCollection<User>;
-  usersDoc: AngularFirestoreDocument<User>;
+  userDoc: AngularFirestoreDocument<User>;
   users: Observable<User[]>;
   user: Observable<User>;
 
@@ -21,6 +21,13 @@ export class UserService {
     this.usersCollection = this.afs.collection('users', ref =>
       ref.orderBy('username', 'asc')
     );
+  }
+
+  // To use a custom DB UID you need to use .set, not .add
+  // This (currently) is only necessary for Users
+  // https://stackoverflow.com/questions/48541270/how-to-add-document-with-custom-id-to-firestore-angular
+  addUser(user: User, uid: string) {
+    this.usersCollection.doc(uid).set(user);
   }
 
   getUsers(): Observable<User[]> {
@@ -35,4 +42,28 @@ export class UserService {
     );
     return this.users;
   }
+
+  getUser(id: String): Observable<User> {
+    this.userDoc = this.afs.doc<User>(`users/${id}`);
+
+    this.user = this.userDoc.snapshotChanges().pipe(
+      map(action => {
+        if (action.payload.exists === false) {
+          return null;
+        } else {
+          const data = action.payload.data() as User;
+          data.id = action.payload.id;
+          return data;
+        }
+      })
+    );
+    return this.user;
+  }
+
+  updateUser(user: User) {
+    this.userDoc = this.afs.doc(`users/${user.id}`);
+    this.userDoc.update(user);
+  }
+
+  // TODO: Implement user delete
 }
