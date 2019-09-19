@@ -17,6 +17,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AddGroupComponent } from './components/add-group/add-group.component';
+import { FindGroupsComponent } from './components/find-groups/find-groups.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { AddGroupComponent } from './components/add-group/add-group.component';
     LoginComponent,
     SettingsComponent,
     NotFoundComponent,
-    AddGroupComponent
+    AddGroupComponent,
+    FindGroupsComponent
   ],
   imports: [
     BrowserModule,
