@@ -1,5 +1,10 @@
 <app-navbar></app-navbar>
-<div class="container">
+<!-- Don't want container margins on Group Component -->
+<div *ngIf="isGroupRouteActivated()">
+  <flash-messages></flash-messages>
+  <router-outlet></router-outlet>
+</div>
+<div *ngIf="!isGroupRouteActivated()" class="container">
   <flash-messages></flash-messages>
   <router-outlet></router-outlet>
 </div>

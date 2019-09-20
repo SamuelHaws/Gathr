@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Gathr';
+
+  constructor(private router: Router) {}
+
+  isGroupRouteActivated() {
+    console.log(this.router.url);
+    return this.router.url.includes('/group/');
+  }
 }

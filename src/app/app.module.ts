@@ -8,6 +8,8 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
+import { AngularSplitModule } from 'angular-split';
+
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -18,6 +20,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AddGroupComponent } from './components/add-group/add-group.component';
 import { FindGroupsComponent } from './components/find-groups/find-groups.component';
+import { GroupComponent } from './components/group/group.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,8 @@ import { FindGroupsComponent } from './components/find-groups/find-groups.compon
     SettingsComponent,
     NotFoundComponent,
     AddGroupComponent,
-    FindGroupsComponent
+    FindGroupsComponent,
+    GroupComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +42,8 @@ import { FindGroupsComponent } from './components/find-groups/find-groups.compon
     FlashMessagesModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    AngularSplitModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
