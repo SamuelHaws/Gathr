@@ -50,9 +50,8 @@ export class RegisterComponent implements OnInit {
         });
         this.user.email = this.email;
         this.user.username = this.username;
-        console.log('yeet');
         console.log(this.user);
-        this.userService.addUser(this.user, this.uid);
+        this.userService.addUser(this.user);
         this.flashMessage.show('You are now registered!', {
           cssClass: 'alert-success',
           timeout: 3500

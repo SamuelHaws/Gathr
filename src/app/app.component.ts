@@ -12,7 +12,6 @@ export class AppComponent {
   constructor(private router: Router) {}
 
   isGroupRouteActivated() {
-    console.log(this.router.url);
-    return this.router.url.includes('/group/');
+    return this.router.url.includes('/g/');
   }
 }

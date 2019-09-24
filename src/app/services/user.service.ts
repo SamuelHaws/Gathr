@@ -26,8 +26,8 @@ export class UserService {
   // To use a custom DB UID you need to use .set, not .add
   // This (currently) is only necessary for Users
   // https://stackoverflow.com/questions/48541270/how-to-add-document-with-custom-id-to-firestore-angular
-  addUser(user: User, uid: string) {
-    this.usersCollection.doc(uid).set(user);
+  addUser(user: User) {
+    this.usersCollection.doc(user.username).set(user);
   }
 
   getUsers(): Observable<User[]> {
@@ -35,7 +35,7 @@ export class UserService {
       map(changes => {
         return changes.map(action => {
           const data = action.payload.doc.data() as User;
-          data.id = action.payload.doc.id;
+          data.username = action.payload.doc.id;
           return data;
         });
       })
@@ -52,7 +52,7 @@ export class UserService {
           return null;
         } else {
           const data = action.payload.data() as User;
-          data.id = action.payload.id;
+          data.username = action.payload.id;
           return data;
         }
       })
@@ -61,7 +61,7 @@ export class UserService {
   }
 
   updateUser(user: User) {
-    this.userDoc = this.afs.doc(`users/${user.id}`);
+    this.userDoc = this.afs.doc(`users/${user.username}`);
     this.userDoc.update(user);
   }
 

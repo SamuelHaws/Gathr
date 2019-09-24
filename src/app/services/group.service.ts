@@ -25,7 +25,8 @@ export class GroupService {
   }
 
   addGroup(group: Group) {
-    this.groupsCollection.add(group);
+    // this.groupsCollection.add(group);
+    this.groupsCollection.doc(group.groupname).set(group);
   }
 
   getGroups(): Observable<Group[]> {
@@ -33,7 +34,7 @@ export class GroupService {
       map(changes => {
         return changes.map(action => {
           const data = action.payload.doc.data() as Group;
-          data.id = action.payload.doc.id;
+          data.groupname = action.payload.doc.id;
           return data;
         });
       })
@@ -41,8 +42,8 @@ export class GroupService {
     return this.groups;
   }
 
-  getGroup(id: String): Observable<Group> {
-    this.groupDoc = this.afs.doc<Group>(`groups/${id}`);
+  getGroup(groupname: String): Observable<Group> {
+    this.groupDoc = this.afs.doc<Group>(`groups/${groupname}`);
 
     this.group = this.groupDoc.snapshotChanges().pipe(
       map(action => {
@@ -50,7 +51,7 @@ export class GroupService {
           return null;
         } else {
           const data = action.payload.data() as Group;
-          data.id = action.payload.id;
+          data.groupname = action.payload.id;
           return data;
         }
       })

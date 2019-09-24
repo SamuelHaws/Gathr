@@ -1,5 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SplitComponent, SplitAreaDirective } from 'angular-split';
+import { Group } from 'src/app/models/Group';
+import { GroupService } from 'src/app/services/group.service';
 
 @Component({
   selector: 'app-group',
@@ -11,6 +14,10 @@ export class GroupComponent implements OnInit {
   @ViewChild('area1', { static: false }) area1: SplitAreaDirective;
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
 
+  group: Group = {
+    groupname: '',
+    description: ''
+  };
   direction: string = 'horizontal';
   sizes = {
     percent: {
@@ -24,7 +31,10 @@ export class GroupComponent implements OnInit {
     }
   };
 
-  constructor() {}
+  constructor(
+    private groupService: GroupService,
+    private route: ActivatedRoute
+  ) {}
 
   dragEnd(unit, { sizes }) {
     if (unit === 'percent') {
@@ -37,5 +47,12 @@ export class GroupComponent implements OnInit {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // get groupname from url... yes it has to be 'id'
+    this.groupService
+      .getGroup(this.route.snapshot.params['id'])
+      .subscribe(group => {
+        this.group = group;
+      });
+  }
 }
