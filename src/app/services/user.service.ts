@@ -43,8 +43,8 @@ export class UserService {
     return this.users;
   }
 
-  getUser(id: String): Observable<User> {
-    this.userDoc = this.afs.doc<User>(`users/${id}`);
+  getUser(username: String): Observable<User> {
+    this.userDoc = this.afs.doc<User>(`users/${username}`);
 
     this.user = this.userDoc.snapshotChanges().pipe(
       map(action => {

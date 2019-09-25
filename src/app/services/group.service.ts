@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Group } from '../models/Group';
+import { Chat } from '../models/Chat';
+import { firestore } from 'firebase';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ export class GroupService {
   groupDoc: AngularFirestoreDocument<Group>;
   groups: Observable<Group[]>;
   group: Observable<Group>;
+  chats: Observable<Chat[]>;
 
   constructor(private afs: AngularFirestore) {
     this.groupsCollection = this.afs.collection('groups', ref =>
@@ -57,5 +60,32 @@ export class GroupService {
       })
     );
     return this.group;
+  }
+
+  getChats(): Observable<Chat[]> {
+    this.chats = this.groupDoc
+      .collection(`/chats`)
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as Chat;
+            data.id = action.payload.doc.id;
+            // convert from Timestamp to Date
+            data.createdAt = ((data.createdAt as unknown) as firestore.Timestamp).toDate();
+            return data;
+          });
+        })
+      );
+    return this.chats;
+  }
+
+  addChat(chatMessage: string, username: string) {
+    const chat: Chat = {
+      owner: username,
+      createdAt: new Date(),
+      message: chatMessage
+    };
+    this.groupDoc.collection(`chats`).add(chat);
   }
 }

@@ -39,24 +39,23 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     this.authService
-      .register(this.email, this.password)
+      .register(this.username, this.email, this.password)
       .then(res => {
         this.authService.getAuth().subscribe(auth => {
           if (auth) {
             this.uid = auth.uid; // get active user id
+            this.user.email = this.email;
+            this.user.username = this.username;
+            this.userService.addUser(this.user);
+            this.flashMessage.show('You are now registered!', {
+              cssClass: 'alert-success',
+              timeout: 3500
+            });
+            this.router.navigate(['/']);
           } else {
             console.error('NO AUTH ON REGISTER');
           }
         });
-        this.user.email = this.email;
-        this.user.username = this.username;
-        console.log(this.user);
-        this.userService.addUser(this.user);
-        this.flashMessage.show('You are now registered!', {
-          cssClass: 'alert-success',
-          timeout: 3500
-        });
-        this.router.navigate(['/']);
       })
       .catch(err => {
         this.flashMessage.show(err.message, {

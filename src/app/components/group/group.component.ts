@@ -1,38 +1,39 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SplitComponent, SplitAreaDirective } from 'angular-split';
 import { Group } from 'src/app/models/Group';
 import { GroupService } from 'src/app/services/group.service';
+import { Chat } from 'src/app/models/Chat';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-group',
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
 })
-export class GroupComponent implements OnInit {
+export class GroupComponent implements OnInit, AfterViewInit {
   @ViewChild('split', { static: false }) split: SplitComponent;
   @ViewChild('area1', { static: false }) area1: SplitAreaDirective;
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
 
+  username: string;
   group: Group = {
     groupname: '',
     description: ''
   };
+  chats: Chat[];
+  chatInput: string = '';
   direction: string = 'horizontal';
   sizes = {
     percent: {
       area1: 30,
       area2: 70
-    },
-    pixel: {
-      area1: 120,
-      area2: '*',
-      area3: 160
     }
   };
 
   constructor(
     private groupService: GroupService,
+    private authService: AuthService,
     private route: ActivatedRoute
   ) {}
 
@@ -40,10 +41,6 @@ export class GroupComponent implements OnInit {
     if (unit === 'percent') {
       this.sizes.percent.area1 = sizes[0];
       this.sizes.percent.area2 = sizes[1];
-    } else if (unit === 'pixel') {
-      this.sizes.pixel.area1 = sizes[0];
-      this.sizes.pixel.area2 = sizes[1];
-      this.sizes.pixel.area3 = sizes[2];
     }
   }
 
@@ -54,5 +51,40 @@ export class GroupComponent implements OnInit {
       .subscribe(group => {
         this.group = group;
       });
+
+    // load chats for group
+    this.groupService.getChats().subscribe(chats => {
+      this.chats = chats.sort((a: Chat, b: Chat) => {
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      });
+    });
+
+    // load current user (for adding chats)
+    this.authService.getAuth().subscribe(auth => {
+      this.username = auth.displayName;
+    });
+  }
+
+  ngAfterViewInit() {
+    this.initialUpdateScroll();
+  }
+
+  chatSubmit() {
+    this.groupService.addChat(this.chatInput, this.username);
+    this.updateScroll();
+  }
+
+  initialUpdateScroll() {
+    setTimeout(function() {
+      let element = document.getElementById('chatarea');
+      element.scrollTop = element.scrollHeight;
+    }, 350);
+  }
+
+  updateScroll() {
+    setTimeout(function() {
+      let element = document.getElementById('chatarea');
+      element.scrollTop = element.scrollHeight;
+    }, 10);
   }
 }

@@ -1,11 +1,13 @@
 <div class="my-4">
-  <input type="text" name="searchbox" id="searchbox" class="filterinput form-control" placeholder="Search groups...">
+  <input type="text" name="searchbox" id="searchbox" class="filterinput form-control" [(ngModel)]="searchText"
+    placeholder="Search groups...">
 </div>
 
 <div class="row">
   <div class="card-columns">
     <ng-container *ngFor="let group of groups">
-      <div class="card" *ngIf="group.public === true">
+      <div class="card"
+        *ngIf="group.public === true && (group.groupname.toLowerCase().includes(searchText.toLowerCase()) || searchText === '')">
         <div class="card-body">
           <h5 class="card-title">{{group.groupname}}</h5>
           <p class="card-text">{{group.description}}</p>

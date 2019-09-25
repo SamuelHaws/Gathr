@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,19 +11,38 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn: boolean;
-  loggedInUser: string;
+  loggedInUsername: string;
 
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     private flashMessage: FlashMessagesService
   ) {}
+
+  // SAVED FOR LATER, USE SOMETHING LIKE THIS TO GET FULL USER DETAILS
+
+  // ngOnInit() {
+  //   this.authService.getAuth().subscribe(auth => {
+  //     if (auth) {
+  //       this.isLoggedIn = true;
+  //       this.userService.getUser(auth.displayName).subscribe(user => {
+  //         this.loggedInUsername = user.username;
+  //       });
+  //     } else {
+  //       this.isLoggedIn = false;
+  //     }
+  //   });
+  // }
+
+  // RIGHT NOW we only need the username,
+  // which can be retrieved by auth service
 
   ngOnInit() {
     this.authService.getAuth().subscribe(auth => {
       if (auth) {
         this.isLoggedIn = true;
-        this.loggedInUser = auth.email;
+        this.loggedInUsername = auth.displayName;
       } else {
         this.isLoggedIn = false;
       }
