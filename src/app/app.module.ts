@@ -21,6 +21,7 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AddGroupComponent } from './components/add-group/add-group.component';
 import { FindGroupsComponent } from './components/find-groups/find-groups.component';
 import { GroupComponent } from './components/group/group.component';
+import { PostComponent } from './components/post/post.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { GroupComponent } from './components/group/group.component';
     NotFoundComponent,
     AddGroupComponent,
     FindGroupsComponent,
-    GroupComponent
+    GroupComponent,
+    PostComponent
   ],
   imports: [
     BrowserModule,

@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
-
-import { Chat } from '../../models/Chat';
 import { Group } from '../../models/Group';
 import { GroupService } from 'src/app/services/group.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
@@ -35,7 +33,7 @@ export class AddGroupComponent implements OnInit {
   ngOnInit() {
     this.authService.getAuth().subscribe(auth => {
       if (auth) {
-        this.group.owner = auth.uid; // get active user id
+        this.group.owner = auth.displayName; // get active user username
       } else {
         console.error('NO AUTH ON ADDGROUP');
       }

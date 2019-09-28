@@ -45,7 +45,7 @@ export class GroupService {
     return this.groups;
   }
 
-  getGroup(groupname: String): Observable<Group> {
+  getGroup(groupname: string): Observable<Group> {
     this.groupDoc = this.afs.doc<Group>(`groups/${groupname}`);
 
     this.group = this.groupDoc.snapshotChanges().pipe(

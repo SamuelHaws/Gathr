@@ -5,6 +5,8 @@ import { Group } from 'src/app/models/Group';
 import { GroupService } from 'src/app/services/group.service';
 import { Chat } from 'src/app/models/Chat';
 import { AuthService } from 'src/app/services/auth.service';
+import { Post } from 'src/app/models/Post';
+import { PostService } from 'src/app/services/post.service';
 
 @Component({
   selector: 'app-group',
@@ -21,6 +23,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
     groupname: '',
     description: ''
   };
+  posts: Post[];
   chats: Chat[];
   chatInput: string = '';
   direction: string = 'horizontal';
@@ -33,6 +36,7 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   constructor(
     private groupService: GroupService,
+    private postsService: PostService,
     private authService: AuthService,
     private route: ActivatedRoute
   ) {}
@@ -58,6 +62,11 @@ export class GroupComponent implements OnInit, AfterViewInit {
         return a.createdAt.getTime() - b.createdAt.getTime();
       });
     });
+
+    // load posts for group
+    this.postsService
+      .getPostsByGroupName(this.route.snapshot.params['id'])
+      .subscribe(posts => (this.posts = posts));
 
     // load current user (for adding chats)
     this.authService.getAuth().subscribe(auth => {
