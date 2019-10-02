@@ -24,7 +24,6 @@ export class UserService {
   }
 
   // To use a custom DB UID you need to use .set, not .add
-  // This (currently) is only necessary for Users
   // https://stackoverflow.com/questions/48541270/how-to-add-document-with-custom-id-to-firestore-angular
   addUser(user: User) {
     this.usersCollection.doc(user.username).set(user);

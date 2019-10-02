@@ -5,8 +5,8 @@ import {
   AngularFirestore
 } from 'angularfire2/firestore';
 import { Post } from '../models/Post';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { Feed } from '../models/Feed';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class PostService {
   postDoc: AngularFirestoreDocument<Post>;
   postIds: string[];
   post: Observable<Post>;
-  posts: BehaviorSubject<Post[]> = new BehaviorSubject<Post[]>([]);
+  posts: Observable<Post[]>;
   feedsCollection: AngularFirestoreCollection<Feed>; //TODO: change any
   feeds: Observable<Feed[]>;
 
@@ -59,24 +59,25 @@ export class PostService {
   // Get feeds with matching groupName, then fetch corresponding
   // Posts from PostsCollection
   getPostsByGroupName(groupName: string) {
+    let tempPostArray: Post[] = [];
     // Query feeds
     this.feeds = this.afs
       .collection('feeds', ref => ref.where('group', '==', groupName))
       .valueChanges();
-    this.feeds.subscribe(feeds => {
+    this.feeds.pipe(take(1)).subscribe(feeds => {
       // Create array of postIds from the feeds
       feeds
         .map(feed => feed.post)
         // Get Posts by PostIds
         .map(postId =>
-          this.getPost(postId).subscribe(post => {
-            let posts = this.posts.getValue();
-            posts.push(post);
-            // Add updated posts to BehaviorSubject
-            this.posts.next(posts);
-          })
+          this.getPost(postId)
+            .pipe(take(1))
+            .subscribe(post => {
+              tempPostArray.push(post);
+            })
         );
     });
+    this.posts = of(tempPostArray);
     return this.posts;
   }
 }

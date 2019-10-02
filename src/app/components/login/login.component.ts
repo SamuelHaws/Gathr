@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FlashMessagesService } from 'angular2-flash-messages';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   email: string;
   password: string;
+
+  authSubscription: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -19,11 +22,15 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authService.getAuth().subscribe(auth => {
+    this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
         this.router.navigate(['/']);
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.authSubscription.unsubscribe();
   }
 
   onSubmit() {

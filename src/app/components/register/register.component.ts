@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { UserService } from 'src/app/services/user.service';
 
 import { User } from '../../models/User';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   email: string;
   password: string;
   username: string;
@@ -21,6 +22,9 @@ export class RegisterComponent implements OnInit {
     email: '',
     usersettings: {}
   };
+  private auth;
+
+  authSubscription: Subscription;
 
   constructor(
     private router: Router,
@@ -30,32 +34,35 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authService.getAuth().subscribe(auth => {
+    this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
         this.router.navigate(['/']);
       }
+      this.auth = auth;
     });
+  }
+
+  ngOnDestroy() {
+    this.authSubscription.unsubscribe();
   }
 
   onSubmit() {
     this.authService
       .register(this.username, this.email, this.password)
       .then(res => {
-        this.authService.getAuth().subscribe(auth => {
-          if (auth) {
-            this.uid = auth.uid; // get active user id
-            this.user.email = this.email;
-            this.user.username = this.username;
-            this.userService.addUser(this.user);
-            this.flashMessage.show('You are now registered!', {
-              cssClass: 'alert-success',
-              timeout: 3500
-            });
-            this.router.navigate(['/']);
-          } else {
-            console.error('NO AUTH ON REGISTER');
-          }
-        });
+        if (this.auth) {
+          this.uid = this.auth.uid; // get active user id
+          this.user.email = this.email;
+          this.user.username = this.username;
+          this.userService.addUser(this.user);
+          this.flashMessage.show('You are now registered!', {
+            cssClass: 'alert-success',
+            timeout: 3500
+          });
+          this.router.navigate(['/']);
+        } else {
+          console.error('NO AUTH ON REGISTER');
+        }
       })
       .catch(err => {
         this.flashMessage.show(err.message, {

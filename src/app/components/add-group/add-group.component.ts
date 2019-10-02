@@ -1,16 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { Group } from '../../models/Group';
 import { GroupService } from 'src/app/services/group.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add-group',
   templateUrl: './add-group.component.html',
   styleUrls: ['./add-group.component.css']
 })
-export class AddGroupComponent implements OnInit {
+export class AddGroupComponent implements OnInit, OnDestroy {
   // activeUserID: string;
   group: Group = {
     groupname: '',
@@ -20,6 +21,8 @@ export class AddGroupComponent implements OnInit {
     // chats: [],
     // posts: []
   };
+
+  authSubscription: Subscription;
 
   @ViewChild('groupForm', { static: false }) form: any;
 
@@ -31,13 +34,17 @@ export class AddGroupComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authService.getAuth().subscribe(auth => {
+    this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
         this.group.owner = auth.displayName; // get active user username
       } else {
         console.error('NO AUTH ON ADDGROUP');
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription) this.authSubscription.unsubscribe();
   }
 
   // TODO: form validation

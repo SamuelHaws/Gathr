@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SplitComponent, SplitAreaDirective } from 'angular-split';
 import { Group } from 'src/app/models/Group';
@@ -7,13 +13,15 @@ import { Chat } from 'src/app/models/Chat';
 import { AuthService } from 'src/app/services/auth.service';
 import { Post } from 'src/app/models/Post';
 import { PostService } from 'src/app/services/post.service';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-group',
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
 })
-export class GroupComponent implements OnInit, AfterViewInit {
+export class GroupComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('split', { static: false }) split: SplitComponent;
   @ViewChild('area1', { static: false }) area1: SplitAreaDirective;
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
@@ -34,9 +42,14 @@ export class GroupComponent implements OnInit, AfterViewInit {
     }
   };
 
+  groupSubscription: Subscription;
+  chatSubscription: Subscription;
+  postSubscription: Subscription;
+  authSubscription: Subscription;
+
   constructor(
     private groupService: GroupService,
-    private postsService: PostService,
+    private postService: PostService,
     private authService: AuthService,
     private route: ActivatedRoute
   ) {}
@@ -50,32 +63,42 @@ export class GroupComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     // get groupname from url... yes it has to be 'id'
-    this.groupService
+    this.groupSubscription = this.groupService
       .getGroup(this.route.snapshot.params['id'])
+      .pipe(take(1))
       .subscribe(group => {
         this.group = group;
       });
 
     // load chats for group
-    this.groupService.getChats().subscribe(chats => {
+    this.chatSubscription = this.groupService.getChats().subscribe(chats => {
       this.chats = chats.sort((a: Chat, b: Chat) => {
         return a.createdAt.getTime() - b.createdAt.getTime();
       });
     });
 
     // load posts for group
-    this.postsService
+    this.postSubscription = this.postService
       .getPostsByGroupName(this.route.snapshot.params['id'])
       .subscribe(posts => (this.posts = posts));
 
     // load current user (for adding chats)
-    this.authService.getAuth().subscribe(auth => {
+    this.authSubscription = this.authService.getAuth().subscribe(auth => {
       this.username = auth.displayName;
+      console.log('loggit');
     });
   }
 
   ngAfterViewInit() {
     this.initialUpdateScroll();
+  }
+
+  ngOnDestroy() {
+    console.log(this.posts);
+    if (this.groupSubscription) this.groupSubscription.unsubscribe();
+    if (this.chatSubscription) this.chatSubscription.unsubscribe();
+    if (this.postSubscription) this.postSubscription.unsubscribe();
+    if (this.authSubscription) this.authSubscription.unsubscribe();
   }
 
   chatSubmit() {
