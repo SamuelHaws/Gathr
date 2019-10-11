@@ -5,6 +5,7 @@ import {
   AngularFirestore
 } from 'angularfire2/firestore';
 import { Post } from '../models/Post';
+import { Comment } from '../models/Comment';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Feed } from '../models/Feed';
@@ -18,6 +19,7 @@ export class PostService {
   postIds: string[];
   post: Observable<Post>;
   posts: Observable<Post[]>;
+  comments: Observable<Comment[]>;
   feedsCollection: AngularFirestoreCollection<Feed>; //TODO: change any
   feeds: Observable<Feed[]>;
 
@@ -28,7 +30,7 @@ export class PostService {
     );
   }
 
-  private getPost(postId: string): Observable<Post> {
+  getPost(postId: string): Observable<Post> {
     this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
 
     this.post = this.postDoc.snapshotChanges().pipe(
@@ -37,6 +39,7 @@ export class PostService {
           return null;
         } else {
           const data = action.payload.data() as Post;
+          data.id = action.payload.id;
           return data;
         }
       })
@@ -79,5 +82,10 @@ export class PostService {
     });
     this.posts = of(tempPostArray);
     return this.posts;
+  }
+
+  getComments(postId: string) {
+    this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
+    return this.postDoc.collection('comments').valueChanges();
   }
 }

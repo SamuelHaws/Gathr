@@ -4,39 +4,55 @@
     <div class="holder">
       <as-split unit="percent" [direction]="direction" (dragEnd)="dragEnd('percent', $event)" #split="asSplit"
         style="height: 100%">
-        <as-split-area size="60" #area1="asSplitArea">
+        <as-split-area size="60" #area1="asSplitArea" style="padding-right: 15px">
           <h2>Posts</h2>
           <ng-container *ngFor="let post of posts">
             <div class="card">
               <div class="card-body">
-                <a href="{{post.link}}">
-                  <h5 class="card-title">{{post.title}}</h5>
-                </a>
-                <p class="card-text">{{post.owner}}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="post-info">
+                    <a href="{{post.link}}">
+                      <h5 class="card-title">{{post.title}}</h5>
+                    </a>
+                    <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
+                  </div>
+                  <div class="post-comment">
+                    <a routerLink="/p/{{post.id}}" class="btn btn-primary">View Comments</a>
+                  </div>
+                </div>
               </div>
             </div>
           </ng-container>
         </as-split-area>
-        <as-split-area id="chatarea" size="40" #area2="asSplitArea" class="px-4">
-          <div id="yeet" class="d-flex flex-column align-items-center" style="height: 100%">
+        <as-split-area size="40" #area2="asSplitArea" class="px-4">
+          <as-split direction="vertical" disabled gutterSize=0 unit="percent">
+            <as-split-area id="chatarea" size="90" style="border-bottom: 2px solid lightgray;" #chatarea
+              [scrollTop]="chatarea.scrollHeight">
 
-            <div id="chatfeed" class="mb-auto" style="padding-bottom: 12vh">
-
-              <h2>Chat</h2>
-              <ng-container *ngFor="let chat of chats">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">{{chat.message}}</h5>
-                    <p class="card-text">{{chat.owner}}</p>
+              <div id="chatfeed" class="mb-auto">
+                <ng-container *ngFor="let chat of chats">
+                  <div class="card mr-3 m-1">
+                    <div class="card-body">
+                      <h5 class="card-title">{{chat.message}}</h5>
+                      <p class="card-text">{{chat.owner}}</p>
+                    </div>
                   </div>
-                </div>
-              </ng-container>
-            </div>
-            <div id="chatbox" class="py-2" style="position: absolute; bottom: 3vh">
-              <input autocomplete="off" type="text" name="chatInput" id="chatInput" class="form-control"
-                placeholder="Send message..." [(ngModel)]="chatInput" (keyup.enter)="chatSubmit()">
-            </div>
-          </div>
+                </ng-container>
+                <div id="youcantseeme" autofocus></div>
+              </div>
+            </as-split-area>
+
+            <as-split-area size="10" class="pt-2">
+              <div id="chatbox" class="py-2">
+                <input autocomplete="off" type="text" name="chatInput" id="chatInput" class="form-control"
+                  placeholder="Send message..." [(ngModel)]="chatInput" (keyup.enter)="chatSubmit()">
+              </div>
+            </as-split-area>
+          </as-split>
+          <!-- <div id="yeet" class="d-flex flex-column align-items-center" style="height: 100%"> -->
+
+
+          <!-- </div> -->
         </as-split-area>
       </as-split>
     </div>

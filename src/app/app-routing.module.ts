@@ -11,6 +11,7 @@ import { AddGroupComponent } from './components/add-group/add-group.component';
 import { AuthGuard } from './guards/auth.guard';
 import { FindGroupsComponent } from './components/find-groups/find-groups.component';
 import { GroupComponent } from './components/group/group.component';
+import { PostComponent } from './components/post/post.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
@@ -21,13 +22,15 @@ const routes: Routes = [
   },
   {
     path: 'find-groups',
-    component: FindGroupsComponent,
-    canActivate: [AuthGuard]
+    component: FindGroupsComponent
   },
   {
     path: 'g/:id',
-    component: GroupComponent,
-    canActivate: [AuthGuard]
+    component: GroupComponent
+  },
+  {
+    path: 'p/:id',
+    component: PostComponent
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

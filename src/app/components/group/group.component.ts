@@ -2,8 +2,8 @@ import {
   Component,
   OnInit,
   ViewChild,
-  AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  ElementRef
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SplitComponent, SplitAreaDirective } from 'angular-split';
@@ -21,7 +21,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
 })
-export class GroupComponent implements OnInit, AfterViewInit, OnDestroy {
+export class GroupComponent implements OnInit, OnDestroy {
   @ViewChild('split', { static: false }) split: SplitComponent;
   @ViewChild('area1', { static: false }) area1: SplitAreaDirective;
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
@@ -87,14 +87,20 @@ export class GroupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.username = auth.displayName;
       console.log('loggit');
     });
-  }
 
-  ngAfterViewInit() {
-    this.initialUpdateScroll();
+    // $(document).ready(function() {
+    //   setTimeout(function() {
+    //     let element = document.getElementById('chatarea');
+    //     $('#chatarea').animate(
+    //       { scrollTop: element.scrollHeight },
+    //       220,
+    //       'linear'
+    //     );
+    //   }, 1000);
+    // });
   }
 
   ngOnDestroy() {
-    console.log(this.posts);
     if (this.groupSubscription) this.groupSubscription.unsubscribe();
     if (this.chatSubscription) this.chatSubscription.unsubscribe();
     if (this.postSubscription) this.postSubscription.unsubscribe();
@@ -104,13 +110,6 @@ export class GroupComponent implements OnInit, AfterViewInit, OnDestroy {
   chatSubmit() {
     this.groupService.addChat(this.chatInput, this.username);
     this.updateScroll();
-  }
-
-  initialUpdateScroll() {
-    setTimeout(function() {
-      let element = document.getElementById('chatarea');
-      element.scrollTop = element.scrollHeight;
-    }, 350);
   }
 
   updateScroll() {
