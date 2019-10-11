@@ -12,6 +12,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { FindGroupsComponent } from './components/find-groups/find-groups.component';
 import { GroupComponent } from './components/group/group.component';
 import { PostComponent } from './components/post/post.component';
+import { PostSubmitComponent } from './components/post-submit/post-submit.component';
+import { GroupSelectComponent } from './components/group-select/group-select.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
@@ -31,6 +33,16 @@ const routes: Routes = [
   {
     path: 'p/:id',
     component: PostComponent
+  },
+  {
+    path: 'add-post',
+    component: PostSubmitComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'group-select',
+    component: GroupSelectComponent,
+    canActivate: [AuthGuard]
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

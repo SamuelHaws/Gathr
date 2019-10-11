@@ -25,8 +25,8 @@
           </ng-container>
         </as-split-area>
         <as-split-area size="40" #area2="asSplitArea" class="px-4">
-          <as-split direction="vertical" disabled gutterSize=0 unit="percent">
-            <as-split-area id="chatarea" size="90" style="border-bottom: 2px solid lightgray;" #chatarea
+          <as-split direction="vertical" disabled gutterSize=0 unit="percent" class="pt-2">
+            <as-split-area id="chatarea" size="90" style="border: 2px solid lightgray;" #chatarea
               [scrollTop]="chatarea.scrollHeight">
 
               <div id="chatfeed" class="mb-auto">
@@ -38,7 +38,6 @@
                     </div>
                   </div>
                 </ng-container>
-                <div id="youcantseeme" autofocus></div>
               </div>
             </as-split-area>
 

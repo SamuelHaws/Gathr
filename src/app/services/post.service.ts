@@ -9,6 +9,7 @@ import { Comment } from '../models/Comment';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Feed } from '../models/Feed';
+import { Group } from '../models/Group';
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +22,41 @@ export class PostService {
   posts: Observable<Post[]>;
   comments: Observable<Comment[]>;
   feedsCollection: AngularFirestoreCollection<Feed>; //TODO: change any
+  feed: Feed = {
+    id: '',
+    group: '',
+    post: ''
+  };
   feeds: Observable<Feed[]>;
+  postForm: PostForm;
+  postToAdd: Post = {
+    title: '',
+    body: '',
+    link: ''
+  };
+  selectedGroups: Group[] = [];
 
   constructor(private afs: AngularFirestore) {
     this.feedsCollection = this.afs.collection('feeds');
     this.postsCollection = this.afs.collection('posts', ref =>
       ref.orderBy('author', 'asc')
     );
+  }
+
+  addPost(post: Post) {
+    // Add timestamp to post
+    post.createdAt = new Date();
+    // Create post id, add post to DB
+    const id = this.afs.createId();
+    post.id = id;
+    this.postsCollection.doc(id).set(post);
+    // Create and add feeds to DB
+    this.selectedGroups.forEach(group => {
+      this.feed.id = group.groupname + '|' + post.id;
+      this.feed.group = group.groupname;
+      this.feed.post = post.id;
+      this.feedsCollection.doc(this.feed.id).set(this.feed);
+    });
   }
 
   getPost(postId: string): Observable<Post> {
@@ -88,4 +117,9 @@ export class PostService {
     this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
     return this.postDoc.collection('comments').valueChanges();
   }
+}
+
+export interface PostForm {
+  postToAdd: Post;
+  selectedGroups: Group[];
 }

@@ -1,0 +1,35 @@
+<div class="card mt-4">
+  <div class="card-header">
+    Add Post
+  </div>
+  <div class="card-body">
+    <form #postForm="ngForm" (ngSubmit)="onSubmit(postForm)">
+      <div class="form-group">
+        <label for="title">Post Title</label>
+        <input type="text" class="form-control" name="title" #title="ngModel" [(ngModel)]="post.title" required>
+      </div>
+      <div class="form-group">
+        <label for="link">Post Link</label>
+        <input type="text" class="form-control" name="link" #link="ngModel" [(ngModel)]="post.link" required>
+      </div>
+      <div class="form-group">
+        <label for="body">Post Body</label>
+        <textarea class="form-control" name="body" #body="ngModel" [(ngModel)]="post.body"></textarea>
+      </div>
+      <div class="form-group">
+        <button type="button" class="btn btn-primary" (click)="selectGroups()">Select Groups</button>
+      </div>
+      <div class="card-columns">
+        <ng-container *ngFor="let group of selectedGroups">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{group.groupname}}</h5>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <input type="submit" value="Submit" class="btn btn-primary btn-block mt-3">
+    </form>
+  </div>
+</div>

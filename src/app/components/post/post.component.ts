@@ -14,8 +14,7 @@ import { Post } from 'src/app/models/Post';
 export class PostComponent implements OnInit, OnDestroy {
   post: Post = {
     title: '',
-    owner: '',
-    createdAt: new Date()
+    owner: ''
   };
   comments: Comment[] = [];
   postSubscription: Subscription;

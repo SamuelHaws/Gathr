@@ -46,6 +46,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authSubscription.unsubscribe();
   }
 
+  // TODO: Check for dupe displayname/username???
   onSubmit() {
     this.authService
       .register(this.username, this.email, this.password)

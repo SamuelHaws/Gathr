@@ -1,0 +1,40 @@
+<div class="my-4">
+  <input type="text" name="searchbox" id="searchbox" class="filterinput form-control" [(ngModel)]="searchText"
+    placeholder="Search groups...">
+</div>
+<div class="mb-3">
+  <button type="button" class="btn btn-primary" (click)="addSelectedGroups()">Add Selected Groups</button>
+</div>
+<h3 *ngIf="selectedGroups.length > 0">Selected Groups</h3>
+<div class="row">
+
+  <div class="card-columns">
+    <ng-container *ngFor="let group of selectedGroups">
+      <div class="card mb-0">
+        <div class="card-body">
+          <h5 class="card-title">{{group.groupname}}</h5>
+          <p class="card-text">{{group.description}}</p>
+          <button type="button" class="btn btn-danger" (click)="removeFromSelection($event)">Remove from
+            Selection</button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<hr>
+<h3>Groups Available</h3>
+<div class="row">
+  <div class="card-columns">
+    <ng-container *ngFor="let group of groups">
+      <div class="card"
+        *ngIf="group.public === true && (group.groupname.toLowerCase().includes(searchText.toLowerCase()) || searchText === '')">
+        <div class="card-body">
+          <h5 class="card-title">{{group.groupname}}</h5>
+          <p class="card-text">{{group.description}}</p>
+          <button type="button" class="btn btn-primary" (click)="addToSelection($event)">Add to Selection</button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -4,5 +4,6 @@ export interface Post {
   createdAt?: Date;
   link?: string;
   title?: string;
+  body?: string;
   // comments?: Comment[];
 }
