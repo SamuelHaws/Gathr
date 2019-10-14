@@ -15,6 +15,7 @@ import { Post } from 'src/app/models/Post';
 import { PostService } from 'src/app/services/post.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { Member } from 'src/app/models/Member';
 
 @Component({
   selector: 'app-group',
@@ -27,6 +28,8 @@ export class GroupComponent implements OnInit, OnDestroy {
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
 
   username: string;
+  member: Member; //Used for showing join or leave button
+  isMember: boolean;
   group: Group = {
     groupname: '',
     description: ''
@@ -84,20 +87,21 @@ export class GroupComponent implements OnInit, OnDestroy {
 
     // load current user (for adding chats)
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
-      this.username = auth.displayName;
-      console.log('loggit');
-    });
+      if (auth) {
+        this.username = auth.displayName;
+        // this.groupService
+        //   .getMember(this.route.snapshot.params['id'], this.username)
+        //   .subscribe(member => {
+        //     this.member = member;
+        //   });
 
-    // $(document).ready(function() {
-    //   setTimeout(function() {
-    //     let element = document.getElementById('chatarea');
-    //     $('#chatarea').animate(
-    //       { scrollTop: element.scrollHeight },
-    //       220,
-    //       'linear'
-    //     );
-    //   }, 1000);
-    // });
+        this.groupService
+          .getMember(this.route.snapshot.params['id'], this.username)
+          .subscribe(member => {
+            this.member = member;
+          });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -109,13 +113,13 @@ export class GroupComponent implements OnInit, OnDestroy {
 
   chatSubmit() {
     this.groupService.addChat(this.chatInput, this.username);
-    this.updateScroll();
   }
 
-  updateScroll() {
-    setTimeout(function() {
-      let element = document.getElementById('chatarea');
-      element.scrollTop = element.scrollHeight;
-    }, 10);
+  joinGroup() {
+    this.groupService.joinGroup(this.group.groupname, this.username);
+  }
+
+  leaveGroup() {
+    this.groupService.leaveGroup(this.group.groupname, this.username);
   }
 }

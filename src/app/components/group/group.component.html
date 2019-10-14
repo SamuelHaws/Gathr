@@ -62,8 +62,12 @@
     </div> -->
   </div>
   <!-- Column for sidebar/group info -->
-  <div class="col-md-2 text-center" style="background-color: #d4d4dd">
+  <div class="col-md-2 text-center d-flex flex-column align-items-center" style="background-color: #d4d4dd">
     <h3 class="mt-4">{{group.groupname}}</h3>
     <span class="mt-4">{{group.description}}</span>
+    <button *ngIf="!member && username" type="button" class="btn btn-primary d-block"
+      (click)="joinGroup()">Join</button>
+    <button *ngIf="member && username" type="button" class="btn btn-primary d-block"
+      (click)="leaveGroup()">Leave</button>
   </div>
 </div>

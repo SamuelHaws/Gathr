@@ -4,12 +4,13 @@ import {
   AngularFirestoreDocument,
   AngularFirestore
 } from 'angularfire2/firestore';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Group } from '../models/Group';
 import { Chat } from '../models/Chat';
 import { firestore } from 'firebase';
+import { Member } from '../models/Member';
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +21,22 @@ export class GroupService {
   groups: Observable<Group[]>;
   group: Observable<Group>;
   chats: Observable<Chat[]>;
+  membersCollection: AngularFirestoreCollection<Member>;
+  memberDoc: AngularFirestoreDocument<Member>;
+  members: Observable<Member[]>;
+  member: Observable<Member>;
+  memberObj: Member = {
+    id: '',
+    group: '',
+    user: '',
+    joinedAt: null
+  };
 
   constructor(private afs: AngularFirestore) {
     this.groupsCollection = this.afs.collection('groups', ref =>
       ref.orderBy('groupname', 'asc')
     );
+    this.membersCollection = this.afs.collection('members');
   }
 
   addGroup(group: Group) {
@@ -87,5 +99,40 @@ export class GroupService {
       message: chatMessage
     };
     this.groupDoc.collection(`chats`).add(chat);
+  }
+
+  joinGroup(groupname: string, username: string) {
+    this.memberObj.id = groupname + '|' + username;
+    this.memberObj.group = groupname;
+    this.memberObj.user = username;
+    this.memberObj.joinedAt = new Date();
+    this.membersCollection.doc(this.memberObj.id).set(this.memberObj);
+  }
+
+  leaveGroup(groupname: string, username: string) {
+    this.membersCollection.doc(groupname + '|' + username).delete();
+  }
+
+  // getMember(groupname: string, username: string): Observable<Member> {
+  //   return of(this.membersCollection.doc(groupname + '|' + username));
+  // }
+
+  getMember(groupname: string, username: string): Observable<Member> {
+    this.memberDoc = this.afs.doc<Member>(
+      `members/${groupname + '|' + username}`
+    );
+
+    this.member = this.memberDoc.snapshotChanges().pipe(
+      map(action => {
+        if (action.payload.exists === false) {
+          return null;
+        } else {
+          const data = action.payload.data() as Member;
+          data.joinedAt = ((data.joinedAt as unknown) as firestore.Timestamp).toDate();
+          return data;
+        }
+      })
+    );
+    return this.member;
   }
 }

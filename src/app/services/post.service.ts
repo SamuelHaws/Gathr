@@ -21,7 +21,7 @@ export class PostService {
   post: Observable<Post>;
   posts: Observable<Post[]>;
   comments: Observable<Comment[]>;
-  feedsCollection: AngularFirestoreCollection<Feed>; //TODO: change any
+  feedsCollection: AngularFirestoreCollection<Feed>;
   feed: Feed = {
     id: '',
     group: '',
