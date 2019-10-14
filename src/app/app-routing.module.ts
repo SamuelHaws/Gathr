@@ -44,6 +44,10 @@ const routes: Routes = [
     component: GroupSelectComponent,
     canActivate: [AuthGuard]
   },
+  {
+    path: 'u/:id',
+    component: SettingsComponent
+  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },

@@ -48,26 +48,47 @@
               </div>
             </as-split-area>
           </as-split>
-          <!-- <div id="yeet" class="d-flex flex-column align-items-center" style="height: 100%"> -->
-
-
-          <!-- </div> -->
         </as-split-area>
       </as-split>
     </div>
-    <!-- <br>
-    <div class="btns">
-      <button class="btn btn-warning" style="width: 10vw"
-        (click)="direction = (direction === 'horizontal') ? 'vertical' : 'horizontal'">{{ 'Toggle direction: "' + direction + '"' }}</button>
-    </div> -->
   </div>
   <!-- Column for sidebar/group info -->
   <div class="col-md-2 text-center d-flex flex-column align-items-center" style="background-color: #d4d4dd">
     <h3 class="mt-4">{{group.groupname}}</h3>
     <span class="mt-4">{{group.description}}</span>
-    <button *ngIf="!member && username" type="button" class="btn btn-primary d-block"
-      (click)="joinGroup()">Join</button>
-    <button *ngIf="member && username" type="button" class="btn btn-primary d-block"
-      (click)="leaveGroup()">Leave</button>
+    <div class="mt-1">
+      <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#rosterModal">View
+        Roster</button>
+      <button *ngIf="!member && username" type="button" class="btn btn-primary" (click)="joinGroup()">Join</button>
+      <button *ngIf="member && username" type="button" class="btn btn-primary" (click)="leaveGroup()">Leave</button>
+    </div>
+  </div>
+  <div id="rosterModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Roster: {{group.groupname}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <input type="text" name="searchbox" id="searchbox" class="filterinput form-control"
+              [(ngModel)]="rosterSearchText" placeholder="Search roster...">
+          </div>
+          <ul class="list-group">
+            <ng-container *ngFor="let membername of roster">
+              <li
+                *ngIf="group.groupname.toLowerCase().includes(rosterSearchText.toLowerCase()) || rosterSearchText === ''"
+                class="list-group-item" (click)="navToUser($event)">{{membername}}</li>
+            </ng-container>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

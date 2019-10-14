@@ -1,11 +1,5 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  OnDestroy,
-  ElementRef
-} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SplitComponent, SplitAreaDirective } from 'angular-split';
 import { Group } from 'src/app/models/Group';
 import { GroupService } from 'src/app/services/group.service';
@@ -16,6 +10,8 @@ import { PostService } from 'src/app/services/post.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Member } from 'src/app/models/Member';
+
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-group',
@@ -28,7 +24,9 @@ export class GroupComponent implements OnInit, OnDestroy {
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
 
   username: string;
-  member: Member; //Used for showing join or leave button
+  member: Member; // used for showing join or leave button
+  roster: string[]; //holds members' usernames
+  rosterSearchText: string = '';
   isMember: boolean;
   group: Group = {
     groupname: '',
@@ -47,6 +45,7 @@ export class GroupComponent implements OnInit, OnDestroy {
 
   groupSubscription: Subscription;
   chatSubscription: Subscription;
+  memberSubscription: Subscription;
   postSubscription: Subscription;
   authSubscription: Subscription;
 
@@ -54,7 +53,8 @@ export class GroupComponent implements OnInit, OnDestroy {
     private groupService: GroupService,
     private postService: PostService,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   dragEnd(unit, { sizes }) {
@@ -71,6 +71,7 @@ export class GroupComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(group => {
         this.group = group;
+        this.roster = this.groupService.getRoster(this.group.groupname);
       });
 
     // load chats for group
@@ -89,13 +90,8 @@ export class GroupComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
         this.username = auth.displayName;
-        // this.groupService
-        //   .getMember(this.route.snapshot.params['id'], this.username)
-        //   .subscribe(member => {
-        //     this.member = member;
-        //   });
 
-        this.groupService
+        this.memberSubscription = this.groupService
           .getMember(this.route.snapshot.params['id'], this.username)
           .subscribe(member => {
             this.member = member;
@@ -109,6 +105,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     if (this.chatSubscription) this.chatSubscription.unsubscribe();
     if (this.postSubscription) this.postSubscription.unsubscribe();
     if (this.authSubscription) this.authSubscription.unsubscribe();
+    if (this.memberSubscription) this.memberSubscription.unsubscribe();
   }
 
   chatSubmit() {
@@ -121,5 +118,11 @@ export class GroupComponent implements OnInit, OnDestroy {
 
   leaveGroup() {
     this.groupService.leaveGroup(this.group.groupname, this.username);
+  }
+
+  navToUser(event) {
+    // have to close modal to disable darkened view on navigatee
+    $('#rosterModal').modal('toggle');
+    this.router.navigate([`/u/${event.target.innerText}`]);
   }
 }

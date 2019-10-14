@@ -4,8 +4,8 @@ import {
   AngularFirestoreDocument,
   AngularFirestore
 } from 'angularfire2/firestore';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 import { Group } from '../models/Group';
 import { Chat } from '../models/Chat';
@@ -134,5 +134,16 @@ export class GroupService {
       })
     );
     return this.member;
+  }
+
+  getRoster(groupname: string): string[] {
+    let tempMemberArray: string[] = [];
+    this.members = this.afs
+      .collection('members', ref => ref.where('group', '==', groupname))
+      .valueChanges();
+    this.members.pipe(take(1)).subscribe(members => {
+      members.map(member => tempMemberArray.push(member.user));
+    });
+    return tempMemberArray;
   }
 }
