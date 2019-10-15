@@ -17,9 +17,11 @@ export class FindGroupsComponent implements OnInit, OnDestroy {
   constructor(private groupService: GroupService) {}
 
   ngOnInit() {
-    this.groupSubscription = this.groupService.getGroups().subscribe(groups => {
-      this.groups = groups;
-    });
+    this.groupSubscription = this.groupService
+      .getPublicGroups()
+      .subscribe(groups => {
+        this.groups = groups;
+      });
   }
 
   ngOnDestroy() {

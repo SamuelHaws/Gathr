@@ -18,8 +18,6 @@ export class AddGroupComponent implements OnInit, OnDestroy {
     description: '',
     public: true,
     owner: ''
-    // chats: [],
-    // posts: []
   };
 
   authSubscription: Subscription;

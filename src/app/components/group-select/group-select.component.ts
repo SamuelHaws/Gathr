@@ -3,8 +3,10 @@ import { Location } from '@angular/common';
 import { GroupService } from 'src/app/services/group.service';
 import { Group } from 'src/app/models/Group';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, tap, map, flatMap } from 'rxjs/operators';
 import { PostService } from 'src/app/services/post.service';
+import { UserService } from 'src/app/services/user.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-group-select',
@@ -12,9 +14,10 @@ import { PostService } from 'src/app/services/post.service';
   styleUrls: ['./group-select.component.css']
 })
 export class GroupSelectComponent implements OnInit {
-  groups: Group[];
+  groups: Group[] = [];
   selectedGroups: Group[] = [];
   searchText: string = '';
+  groupnames: string[] = [];
 
   groupSubscription: Subscription;
 
@@ -22,15 +25,30 @@ export class GroupSelectComponent implements OnInit {
   constructor(
     private groupService: GroupService,
     private postService: PostService,
+    private userService: UserService,
+    private authService: AuthService,
     private location: Location
   ) {}
 
   ngOnInit() {
-    this.groupSubscription = this.groupService
-      .getGroups()
+    this.authService
+      .getAuth()
       .pipe(take(1))
-      .subscribe(groups => {
-        this.groups = groups;
+      .subscribe(auth => {
+        this.userService
+          .getMemberGroupnames(auth.displayName)
+          .pipe(take(1))
+          .subscribe(groupnames => {
+            this.groupnames = groupnames;
+            this.groupnames.forEach(groupname => {
+              this.groupService
+                .getGroup(groupname)
+                .pipe(take(1))
+                .subscribe(group => {
+                  this.groups.push(group);
+                });
+            });
+          });
       });
   }
 
@@ -40,8 +58,6 @@ export class GroupSelectComponent implements OnInit {
   }
 
   addToSelection(event) {
-    console.log(this.groups);
-    this.groupSubscription.unsubscribe();
     let groupName = event.target.parentElement.firstChild.innerText;
     // Get selected group
     let selectedGroup = this.groups.find(group => {

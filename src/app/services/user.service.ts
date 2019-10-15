@@ -4,9 +4,10 @@ import {
   AngularFirestoreCollection,
   AngularFirestoreDocument
 } from 'angularfire2/firestore';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { User } from '../models/User';
+import { Member } from '../models/Member';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class UserService {
   userDoc: AngularFirestoreDocument<User>;
   users: Observable<User[]>;
   user: Observable<User>;
+  memberGroupnames: Observable<string[]>;
 
   constructor(private afs: AngularFirestore) {
     this.usersCollection = this.afs.collection('users', ref =>
@@ -42,7 +44,7 @@ export class UserService {
     return this.users;
   }
 
-  getUser(username: String): Observable<User> {
+  getUser(username: string): Observable<User> {
     this.userDoc = this.afs.doc<User>(`users/${username}`);
 
     this.user = this.userDoc.snapshotChanges().pipe(
@@ -57,6 +59,22 @@ export class UserService {
       })
     );
     return this.user;
+  }
+
+  getMemberGroupnames(username: string): Observable<string[]> {
+    console.log(username);
+    this.memberGroupnames = this.afs
+      .collection('members', ref => ref.where('user', '==', username))
+      .snapshotChanges()
+      .pipe(
+        map(changes =>
+          changes.map(action => {
+            const data = action.payload.doc.data() as Member;
+            return data.group;
+          })
+        )
+      );
+    return this.memberGroupnames;
   }
 
   updateUser(user: User) {

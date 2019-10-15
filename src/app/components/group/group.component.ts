@@ -114,10 +114,12 @@ export class GroupComponent implements OnInit, OnDestroy {
 
   joinGroup() {
     this.groupService.joinGroup(this.group.groupname, this.username);
+    this.roster = this.groupService.getRoster(this.group.groupname);
   }
 
   leaveGroup() {
     this.groupService.leaveGroup(this.group.groupname, this.username);
+    this.roster = this.groupService.getRoster(this.group.groupname);
   }
 
   navToUser(event) {

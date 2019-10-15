@@ -17,8 +17,10 @@ import { Member } from '../models/Member';
 })
 export class GroupService {
   groupsCollection: AngularFirestoreCollection<Group>;
+  publicGroupsCollection: AngularFirestoreCollection<Group>;
   groupDoc: AngularFirestoreDocument<Group>;
   groups: Observable<Group[]>;
+  publicGroups: Observable<Group[]>;
   group: Observable<Group>;
   chats: Observable<Chat[]>;
   membersCollection: AngularFirestoreCollection<Member>;
@@ -35,6 +37,9 @@ export class GroupService {
   constructor(private afs: AngularFirestore) {
     this.groupsCollection = this.afs.collection('groups', ref =>
       ref.orderBy('groupname', 'asc')
+    );
+    this.publicGroupsCollection = this.afs.collection('groups', ref =>
+      ref.where('public', '==', true)
     );
     this.membersCollection = this.afs.collection('members');
   }
@@ -55,6 +60,19 @@ export class GroupService {
       })
     );
     return this.groups;
+  }
+
+  getPublicGroups(): Observable<Group[]> {
+    this.publicGroups = this.publicGroupsCollection.snapshotChanges().pipe(
+      map(changes => {
+        return changes.map(action => {
+          const data = action.payload.doc.data() as Group;
+          data.groupname = action.payload.doc.id;
+          return data;
+        });
+      })
+    );
+    return this.publicGroups;
   }
 
   getGroup(groupname: string): Observable<Group> {
