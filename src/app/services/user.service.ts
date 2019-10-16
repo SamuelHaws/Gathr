@@ -62,7 +62,6 @@ export class UserService {
   }
 
   getMemberGroupnames(username: string): Observable<string[]> {
-    console.log(username);
     this.memberGroupnames = this.afs
       .collection('members', ref => ref.where('user', '==', username))
       .snapshotChanges()
@@ -80,6 +79,16 @@ export class UserService {
   updateUser(user: User) {
     this.userDoc = this.afs.doc(`users/${user.username}`);
     this.userDoc.update(user);
+  }
+
+  inviteToGroup(username: string, groupname: string) {
+    this.userDoc = this.afs.doc<User>(`users/${username}`);
+    this.getUser(username)
+      .pipe(take(1))
+      .subscribe(user => {
+        user.invites.push(groupname);
+        this.userDoc.update(user);
+      });
   }
 
   // TODO: Implement user delete

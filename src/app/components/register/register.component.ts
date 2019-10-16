@@ -20,7 +20,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   user: User = {
     username: '',
     email: '',
-    usersettings: {}
+    usersettings: {},
+    invites: []
   };
   private auth;
 

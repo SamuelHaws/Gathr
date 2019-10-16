@@ -62,7 +62,12 @@
       <button *ngIf="!member && username" type="button" class="btn btn-primary" (click)="joinGroup()">Join</button>
       <button *ngIf="member && username" type="button" class="btn btn-primary" (click)="leaveGroup()">Leave</button>
     </div>
+    <div class="mt-1">
+      <button *ngIf="isOwner" type="button" class="btn btn-primary" data-toggle="modal"
+        data-target="#inviteModal">Invite Users</button>
+    </div>
   </div>
+  <!-- Roster Modal -->
   <div id="rosterModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -74,7 +79,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-2">
-            <input type="text" name="searchbox" id="searchbox" class="filterinput form-control"
+            <input type="text" name="roster-searchbox" id="roster-searchbox" class="filterinput form-control"
               [(ngModel)]="rosterSearchText" placeholder="Search roster...">
           </div>
           <ul class="list-group">
@@ -86,6 +91,38 @@
           </ul>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- User Invite Modal -->
+  <div id="inviteModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Invite User</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <input type="text" name="user-searchbox" id="user-searchbox" class="filterinput form-control"
+              [(ngModel)]="usersSearchText" placeholder="Search users...">
+          </div>
+          <ul class="list-group">
+            <ng-container *ngFor="let user of usersToInvite">
+              <li *ngIf="user.username.toLowerCase().includes(usersSearchText.toLowerCase()) || usersSearchText === ''"
+                class="list-group-item">
+                <div class="d-flex align-items-center justify-content-between">{{user.username}}<button type="button"
+                    class="btn btn-primary" (click)="inviteUser($event)">Invite</button>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+        <div class=" modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
       </div>
