@@ -54,6 +54,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   postSubscription: Subscription;
   authSubscription: Subscription;
   usersSubscription: Subscription;
+  rosterSubscription: Subscription;
 
   constructor(
     private groupService: GroupService,
@@ -78,7 +79,11 @@ export class GroupComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(group => {
         this.group = group;
-        this.roster = this.groupService.getRoster(this.group.groupname);
+        this.rosterSubscription = this.groupService
+          .getRoster(this.group.groupname)
+          .subscribe(roster => {
+            this.roster = roster;
+          });
 
         // check for ownership
         this.isOwner = this.group.owner === this.username;
@@ -110,15 +115,13 @@ export class GroupComponent implements OnInit, OnDestroy {
     });
 
     // load users for invite search
-    this.usersSubscription = this.userService.getUsers().subscribe(users => {
-      this.usersToInvite = users;
-      console.log(this.usersToInvite);
-      console.log(this.group.owner);
-      // Owner can't invite himself
-      this.usersToInvite = this.usersToInvite.filter(user => {
-        return user.username != this.group.owner;
+    // (filter non-members on modal expand in refreshMembers())
+    this.usersSubscription = this.userService
+      .getUsers()
+      .pipe(take(1))
+      .subscribe(users => {
+        this.usersToInvite = users;
       });
-    });
 
     setTimeout(() => {
       // check for ownership (backup in case auth sub fetches before group)
@@ -142,12 +145,10 @@ export class GroupComponent implements OnInit, OnDestroy {
   // add member, update roster
   joinGroup() {
     this.groupService.joinGroup(this.group.groupname, this.username);
-    this.roster = this.groupService.getRoster(this.group.groupname);
   }
 
   leaveGroup() {
     this.groupService.leaveGroup(this.group.groupname, this.username);
-    this.roster = this.groupService.getRoster(this.group.groupname);
   }
 
   navToUser(event) {
@@ -162,5 +163,17 @@ export class GroupComponent implements OnInit, OnDestroy {
       event.target.parentElement.firstChild.data,
       this.group.groupname
     );
+  }
+
+  refreshMembers() {
+    // Owner can't invite himself or existing members
+    this.usersToInvite = this.usersToInvite.filter(user => {
+      return (
+        user.username != this.group.owner &&
+        this.roster.find(username => {
+          return username === user.username;
+        }) == undefined
+      );
+    });
   }
 }

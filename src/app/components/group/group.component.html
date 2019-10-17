@@ -63,8 +63,8 @@
       <button *ngIf="member && username" type="button" class="btn btn-primary" (click)="leaveGroup()">Leave</button>
     </div>
     <div class="mt-1">
-      <button *ngIf="isOwner" type="button" class="btn btn-primary" data-toggle="modal"
-        data-target="#inviteModal">Invite Users</button>
+      <button *ngIf="isOwner" type="button" class="btn btn-primary" data-toggle="modal" data-target="#inviteModal"
+        (click)="refreshMembers()">Invite Users</button>
     </div>
   </div>
   <!-- Roster Modal -->

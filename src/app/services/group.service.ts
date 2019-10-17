@@ -26,6 +26,7 @@ export class GroupService {
   membersCollection: AngularFirestoreCollection<Member>;
   memberDoc: AngularFirestoreDocument<Member>;
   members: Observable<Member[]>;
+  memberNames: Observable<string[]>;
   member: Observable<Member>;
   memberObj: Member = {
     id: '',
@@ -154,14 +155,18 @@ export class GroupService {
     return this.member;
   }
 
-  getRoster(groupname: string): string[] {
-    let tempMemberArray: string[] = [];
-    this.members = this.afs
+  getRoster(groupname: string): Observable<string[]> {
+    this.memberNames = this.afs
       .collection('members', ref => ref.where('group', '==', groupname))
-      .valueChanges();
-    this.members.pipe(take(1)).subscribe(members => {
-      members.map(member => tempMemberArray.push(member.user));
-    });
-    return tempMemberArray;
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as Member;
+            return data.user;
+          });
+        })
+      );
+    return this.memberNames;
   }
 }
