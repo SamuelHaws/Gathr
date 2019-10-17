@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { GroupService } from 'src/app/services/group.service';
 import { Group } from 'src/app/models/Group';
 import { Subscription } from 'rxjs';
-import { take, tap, map, flatMap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { PostService } from 'src/app/services/post.service';
 import { UserService } from 'src/app/services/user.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -13,7 +13,7 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './group-select.component.html',
   styleUrls: ['./group-select.component.css']
 })
-export class GroupSelectComponent implements OnInit {
+export class GroupSelectComponent implements OnInit, OnDestroy {
   groups: Group[] = [];
   selectedGroups: Group[] = [];
   searchText: string = '';
@@ -38,6 +38,7 @@ export class GroupSelectComponent implements OnInit {
       .subscribe(auth => {
         this.memberGroupnamesSubscription = this.userService
           .getMemberGroupnames(auth.displayName)
+          .pipe(take(1))
           .subscribe(groupnames => {
             this.groupnames = groupnames;
             console.log(this.groupnames);
@@ -47,6 +48,8 @@ export class GroupSelectComponent implements OnInit {
                 .pipe(take(1))
                 .subscribe(group => {
                   this.groups.push(group);
+                  console.log(this.groups);
+                  console.log(this.groupnames);
                 });
             });
           });

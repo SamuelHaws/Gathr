@@ -69,7 +69,6 @@ export class UserService {
         map(changes =>
           changes.map(action => {
             const data = action.payload.doc.data() as Member;
-            console.log(data);
             return data.group;
           })
         )

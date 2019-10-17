@@ -136,6 +136,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     if (this.authSubscription) this.authSubscription.unsubscribe();
     if (this.memberSubscription) this.memberSubscription.unsubscribe();
     if (this.usersSubscription) this.usersSubscription.unsubscribe();
+    if (this.rosterSubscription) this.rosterSubscription.unsubscribe();
   }
 
   chatSubmit() {

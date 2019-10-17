@@ -78,7 +78,7 @@ export class GroupService {
 
   getGroup(groupname: string): Observable<Group> {
     this.groupDoc = this.afs.doc<Group>(`groups/${groupname}`);
-
+    console.log(groupname);
     this.group = this.groupDoc.snapshotChanges().pipe(
       map(action => {
         if (action.payload.exists === false) {
