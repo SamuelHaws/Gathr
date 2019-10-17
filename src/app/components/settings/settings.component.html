@@ -1,1 +1,20 @@
-<p>settings works!</p>
+<div class="row mt-2">
+  <div class="col-md-9">
+    <h3>Settings</h3>
+    <p>Settings will be here</p>
+  </div>
+  <div class="col-md-3 text-center">
+    <h3>Invites</h3>
+    <ul class="list-group">
+      <ng-container *ngFor="let invite of invites">
+        <li class="list-group-item align-items-center">
+          <h5 class="d-block">{{invite}}</h5>
+          <div class="d-flex justify-content-around">
+            <button type="button" class="btn btn-primary" (click)="acceptInvite($event)">Accept</button>
+            <button type="button" class="btn btn-danger" (click)="declineInvite($event)">Decline</button>
+          </div>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</div>
