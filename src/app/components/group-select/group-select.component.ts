@@ -20,6 +20,7 @@ export class GroupSelectComponent implements OnInit {
   groupnames: string[] = [];
 
   groupSubscription: Subscription;
+  memberGroupnamesSubscription: Subscription;
 
   // Location for bringing user back to previous page
   constructor(
@@ -35,11 +36,11 @@ export class GroupSelectComponent implements OnInit {
       .getAuth()
       .pipe(take(1))
       .subscribe(auth => {
-        this.userService
+        this.memberGroupnamesSubscription = this.userService
           .getMemberGroupnames(auth.displayName)
-          .pipe(take(1))
           .subscribe(groupnames => {
             this.groupnames = groupnames;
+            console.log(this.groupnames);
             this.groupnames.forEach(groupname => {
               this.groupService
                 .getGroup(groupname)
@@ -55,6 +56,8 @@ export class GroupSelectComponent implements OnInit {
   // This probably isn't necessary since we are using take() but... oh well.
   ngOnDestroy() {
     if (this.groupSubscription) this.groupSubscription.unsubscribe();
+    if (this.memberGroupnamesSubscription)
+      this.memberGroupnamesSubscription.unsubscribe();
   }
 
   addToSelection(event) {

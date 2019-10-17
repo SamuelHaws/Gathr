@@ -5,5 +5,7 @@ export interface Post {
   link?: string;
   title?: string;
   body?: string;
+  upvotes?: number;
+  downvotes?: number;
   // comments?: Comment[];
 }
