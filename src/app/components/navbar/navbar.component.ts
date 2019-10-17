@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { PostService } from 'src/app/services/post.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,7 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private postService: PostService,
     private router: Router,
     private flashMessage: FlashMessagesService
   ) {}
@@ -45,6 +47,10 @@ export class NavbarComponent implements OnInit {
         this.isLoggedIn = false;
       }
     });
+  }
+
+  onSubmitPostClick() {
+    if (!this.router.url.includes('/g/')) this.postService.selectedGroups = [];
   }
 
   onLogoutClick() {

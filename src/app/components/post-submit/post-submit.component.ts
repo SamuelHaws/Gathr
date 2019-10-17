@@ -18,7 +18,9 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
     owner: '',
     title: '',
     link: '',
-    body: ''
+    body: '',
+    upvotes: 1,
+    downvotes: 0
   };
   selectedGroups: Group[];
   authSubscription: Subscription;
@@ -34,6 +36,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.post = this.postService.postToAdd;
     this.selectedGroups = this.postService.selectedGroups;
+    console.log(this.selectedGroups);
     this.authSubscription = this.authService
       .getAuth()
       .pipe(take(1))

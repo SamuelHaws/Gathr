@@ -20,7 +20,7 @@
           <a routerLink="/u/{{loggedInUsername}}" class="nav-link"> {{loggedInUsername}} </a>
         </li>
         <li *ngIf="isLoggedIn" class="nav-item">
-          <a routerLink="/add-post" class="nav-link"> Submit Post </a>
+          <a routerLink="/add-post" class="nav-link" (click)="onSubmitPostClick()"> Submit Post </a>
         </li>
         <!-- Dropdown -->
         <li *ngIf="isLoggedIn" class="nav-item dropdown">

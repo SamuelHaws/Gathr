@@ -79,6 +79,10 @@ export class GroupComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(group => {
         this.group = group;
+        // set postService.selectedGroups so that 'Submit Post'
+        // auto populates with group
+        this.postService.selectedGroups = Array.of(this.group);
+        // populate roster
         this.rosterSubscription = this.groupService
           .getRoster(this.group.groupname)
           .subscribe(roster => {
@@ -105,7 +109,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
         this.username = auth.displayName;
-
+        this.isOwner = this.group.owner === this.username;
         this.memberSubscription = this.groupService
           .getMember(this.route.snapshot.params['id'], this.username)
           .subscribe(member => {
@@ -123,10 +127,10 @@ export class GroupComponent implements OnInit, OnDestroy {
         this.usersToInvite = users;
       });
 
-    setTimeout(() => {
-      // check for ownership (backup in case auth sub fetches before group)
-      this.isOwner = this.group.owner === this.username;
-    }, 1500);
+    // setTimeout(() => {
+    //   // check for ownership (backup in case auth sub fetches before group)
+    //   this.isOwner = this.group.owner === this.username;
+    // }, 1500);
   }
 
   ngOnDestroy() {
@@ -167,6 +171,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   refreshMembers() {
+    console.log(this.posts);
     // Owner can't invite himself or existing members
     this.usersToInvite = this.usersToInvite.filter(user => {
       return (

@@ -41,15 +41,12 @@ export class GroupSelectComponent implements OnInit, OnDestroy {
           .pipe(take(1))
           .subscribe(groupnames => {
             this.groupnames = groupnames;
-            console.log(this.groupnames);
             this.groupnames.forEach(groupname => {
               this.groupService
                 .getGroup(groupname)
                 .pipe(take(1))
                 .subscribe(group => {
                   this.groups.push(group);
-                  console.log(this.groups);
-                  console.log(this.groupnames);
                 });
             });
           });
