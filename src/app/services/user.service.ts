@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { User } from '../models/User';
 import { Member } from '../models/Member';
+import undefined = require('firebase/empty-import');
 
 @Injectable({
   providedIn: 'root'
@@ -86,7 +87,13 @@ export class UserService {
     this.getUser(username)
       .pipe(take(1))
       .subscribe(user => {
-        user.invites.push(groupname);
+        // if user hasn't already been invited, invite
+        if (
+          user.invites.find(existinginvite => {
+            return existinginvite === groupname;
+          }) == undefined
+        )
+          user.invites.push(groupname);
         this.userDoc.update(user);
       });
   }

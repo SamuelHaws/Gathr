@@ -59,6 +59,8 @@ export class AddGroupComponent implements OnInit, OnDestroy {
       // this.group.public = value.public;
       // Add the group to db
       this.groupService.addGroup(this.group);
+      // Owner automatically joins
+      this.groupService.joinGroup(this.group.groupname, this.group.owner);
       this.flashMessage.show('New group added!', {
         cssClass: 'alert-success',
         timeout: 3500

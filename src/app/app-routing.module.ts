@@ -47,7 +47,7 @@ const routes: Routes = [
   },
   {
     path: 'u/:id',
-    component: FindGroupsComponent
+    component: FindGroupsComponent // TODO: Change to UserComponent
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

@@ -113,7 +113,8 @@
           </div>
           <ul class="list-group">
             <ng-container *ngFor="let user of usersToInvite">
-              <li *ngIf="user.username.toLowerCase().includes(usersSearchText.toLowerCase()) || usersSearchText === ''"
+              <li
+                *ngIf="(user.username.toLowerCase().includes(usersSearchText.toLowerCase()) || usersSearchText === '')"
                 class="list-group-item">
                 <div class="d-flex align-items-center justify-content-between">{{user.username}}<button type="button"
                     class="btn btn-primary" (click)="inviteUser($event)">Invite</button>

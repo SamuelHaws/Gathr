@@ -79,6 +79,7 @@ export class GroupComponent implements OnInit, OnDestroy {
       .subscribe(group => {
         this.group = group;
         this.roster = this.groupService.getRoster(this.group.groupname);
+
         // check for ownership
         this.isOwner = this.group.owner === this.username;
       });
@@ -112,6 +113,11 @@ export class GroupComponent implements OnInit, OnDestroy {
     this.usersSubscription = this.userService.getUsers().subscribe(users => {
       this.usersToInvite = users;
       console.log(this.usersToInvite);
+      console.log(this.group.owner);
+      // Owner can't invite himself
+      this.usersToInvite = this.usersToInvite.filter(user => {
+        return user.username != this.group.owner;
+      });
     });
 
     setTimeout(() => {
