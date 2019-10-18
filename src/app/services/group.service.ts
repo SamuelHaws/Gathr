@@ -94,7 +94,7 @@ export class GroupService {
 
   getChats(): Observable<Chat[]> {
     this.chats = this.groupDoc
-      .collection(`/chats`)
+      .collection(`/chats`, ref => ref.orderBy('createdAt'))
       .snapshotChanges()
       .pipe(
         map(changes => {

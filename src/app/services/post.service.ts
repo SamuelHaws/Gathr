@@ -55,6 +55,7 @@ export class PostService {
       this.feed.id = group.groupname + '|' + post.id;
       this.feed.group = group.groupname;
       this.feed.post = post.id;
+      this.feed.createdAt = post.createdAt;
       this.feedsCollection.doc(this.feed.id).set(this.feed);
     });
   }
@@ -76,25 +77,15 @@ export class PostService {
     return this.post;
   }
 
-  // getPosts(): Observable<Post[]> {
-  //   this.posts = this.postsCollection.snapshotChanges().pipe(
-  //     map(changes => {
-  //       return changes.map(action => {
-  //         const data = action.payload.doc.data() as Post;
-  //         return data;
-  //       });
-  //     })
-  //   );
-  //   return this.posts;
-  // }
-
   // Get feeds with matching groupName, then fetch corresponding
   // Posts from PostsCollection
   getPostsByGroupName(groupName: string) {
     let tempPostArray: Post[] = [];
     // Query feeds
     this.feeds = this.afs
-      .collection('feeds', ref => ref.where('group', '==', groupName))
+      .collection('feeds', ref =>
+        ref.where('group', '==', groupName).orderBy('createdAt', 'desc')
+      )
       .valueChanges();
     this.feeds.pipe(take(1)).subscribe(feeds => {
       // Create array of postIds from the feeds

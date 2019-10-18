@@ -86,7 +86,7 @@ export class GroupSelectComponent implements OnInit, OnDestroy {
       return group.groupname != groupName;
     });
   }
-  addSelectedGroups() {
+  setSelectedGroups() {
     this.postService.selectedGroups = this.selectedGroups;
     this.location.back();
   }
