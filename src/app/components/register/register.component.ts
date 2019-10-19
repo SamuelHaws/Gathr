@@ -56,6 +56,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.uid = this.auth.uid; // get active user id
           this.user.email = this.email;
           this.user.username = this.username;
+          this.user.votes = [];
           this.userService.addUser(this.user);
           this.flashMessage.show('You are now registered!', {
             cssClass: 'alert-success',

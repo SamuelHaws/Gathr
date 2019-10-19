@@ -4,9 +4,11 @@ import { AuthService } from 'src/app/services/auth.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { Post } from 'src/app/models/Post';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { Group } from 'src/app/models/Group';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 @Component({
   selector: 'app-post-submit',
@@ -30,7 +32,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
     private postService: PostService,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private afs: AngularFirestore
   ) {}
 
   ngOnInit() {
@@ -66,6 +68,11 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
       this.post.title = value.title;
       this.post.link = value.link;
       this.post.body = value.body;
+      // auto values
+      this.post.id = this.afs.createId();
+      this.post.upvotes = 1;
+      this.post.downvotes = 0;
+      this.post.upvoteToggled = true;
       // Add the post to db
       this.postService.addPost(this.post);
       // Create feeds
@@ -73,7 +80,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
         cssClass: 'alert-success',
         timeout: 3500
       });
-      this.router.navigate(['/']);
+      this.router.navigate([`/p/${this.post.id}`]);
     }
   }
 

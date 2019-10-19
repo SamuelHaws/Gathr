@@ -10,6 +10,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { AngularSplitModule } from 'angular-split';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -49,7 +51,8 @@ import { GroupSelectComponent } from './components/group-select/group-select.com
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    AngularSplitModule.forRoot()
+    AngularSplitModule.forRoot(),
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

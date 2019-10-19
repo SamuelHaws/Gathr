@@ -46,10 +46,8 @@ export class PostService {
   addPost(post: Post) {
     // Add timestamp to post
     post.createdAt = new Date();
-    // Create post id, add post to DB
-    const id = this.afs.createId();
-    post.id = id;
-    this.postsCollection.doc(id).set(post);
+    //add post to DB
+    this.postsCollection.doc(post.id).set(post);
     // Create and add feeds to DB
     this.selectedGroups.forEach(group => {
       this.feed.id = group.groupname + '|' + post.id;
@@ -75,6 +73,11 @@ export class PostService {
       })
     );
     return this.post;
+  }
+
+  updatePost(post: Post) {
+    this.postDoc = this.afs.doc(`posts/${post.id}`);
+    this.postDoc.update(post);
   }
 
   // Get feeds with matching groupName, then fetch corresponding

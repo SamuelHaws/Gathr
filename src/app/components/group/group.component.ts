@@ -49,6 +49,9 @@ export class GroupComponent implements OnInit, OnDestroy {
   };
   isOwner: boolean;
 
+  upvoteToggled: boolean;
+  downvoteToggled: boolean;
+
   groupSubscription: Subscription;
   chatSubscription: Subscription;
   memberSubscription: Subscription;
@@ -101,9 +104,14 @@ export class GroupComponent implements OnInit, OnDestroy {
     });
 
     // load posts for group
+    console.log(this.route.snapshot.params['id']);
     this.postSubscription = this.postService
       .getPostsByGroupName(this.route.snapshot.params['id'])
-      .subscribe(posts => (this.posts = posts));
+      .pipe(take(1)) //no more auto refresh posts
+      .subscribe(posts => {
+        this.posts = posts;
+        console.log(this.posts);
+      });
 
     // load current user (for adding chats)
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
@@ -115,6 +123,19 @@ export class GroupComponent implements OnInit, OnDestroy {
           .getMember(this.route.snapshot.params['id'], this.username)
           .subscribe(member => {
             this.member = member;
+          });
+        // Get current user, fetch existing upvotes/downvotes
+        this.userService
+          .getUser(this.username)
+          .pipe(take(1))
+          .subscribe(user => {
+            user.votes.forEach(vote => {
+              let post = this.posts.find(post => {
+                return post.id === vote.post;
+              });
+              if (vote.voteDirection === 1) post.upvoteToggled = true;
+              else if (vote.voteDirection === 0) post.downvoteToggled = true;
+            });
           });
       }
     });
@@ -181,5 +202,27 @@ export class GroupComponent implements OnInit, OnDestroy {
         }) == undefined
       );
     });
+  }
+
+  upvoteClick(post) {
+    if (post.downvoteToggled) {
+      post.downvoteToggled = false;
+      post.downvotes--;
+    }
+    if (!post.upvoteToggled) post.upvotes++;
+    else post.upvotes--;
+    post.upvoteToggled = !post.upvoteToggled;
+    this.postService.updatePost(post);
+  }
+
+  downvoteClick(post) {
+    if (post.upvoteToggled) {
+      post.upvoteToggled = false;
+      post.upvotes--;
+    }
+    if (!post.downvoteToggled) post.downvotes++;
+    else post.downvotes--;
+    post.downvoteToggled = !post.downvoteToggled;
+    this.postService.updatePost(post);
   }
 }
