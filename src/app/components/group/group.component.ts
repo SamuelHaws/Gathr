@@ -25,6 +25,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   @ViewChild('area1', { static: false }) area1: SplitAreaDirective;
   @ViewChild('area2', { static: false }) area2: SplitAreaDirective;
 
+  isLoggedIn: boolean;
   username: string;
   member: Member; // used for showing join or leave button
   roster: string[]; //holds members' usernames
@@ -79,14 +80,15 @@ export class GroupComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(group => {
         this.group = group;
-        // set postService.selectedGroups so that 'Submit Post'
-        // auto populates with group
-        this.postService.selectedGroups = Array.of(this.group);
         // populate roster
         this.rosterSubscription = this.groupService
           .getRoster(this.group.groupname)
           .subscribe(roster => {
             this.roster = roster;
+            // set postService.selectedGroups so that 'Submit Post'
+            // auto populates with group if member
+            if (this.roster.find(membername => membername === this.username))
+              this.postService.selectedGroups = Array.of(this.group);
           });
 
         // check for ownership
@@ -106,6 +108,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     // load current user (for adding chats)
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
+        this.isLoggedIn = true;
         this.username = auth.displayName;
         this.isOwner = this.group.owner === this.username;
         this.memberSubscription = this.groupService
@@ -124,11 +127,6 @@ export class GroupComponent implements OnInit, OnDestroy {
       .subscribe(users => {
         this.usersToInvite = users;
       });
-
-    // setTimeout(() => {
-    //   // check for ownership (backup in case auth sub fetches before group)
-    //   this.isOwner = this.group.owner === this.username;
-    // }, 1500);
   }
 
   ngOnDestroy() {
@@ -142,16 +140,20 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   chatSubmit() {
-    this.groupService.addChat(this.chatInput, this.username);
+    if (this.isLoggedIn) {
+      this.groupService.addChat(this.chatInput, this.username);
+      this.chatInput = '';
+    }
   }
 
-  // add member, update roster
+  // add member
   joinGroup() {
     this.groupService.joinGroup(this.group.groupname, this.username);
   }
 
   leaveGroup() {
     this.groupService.leaveGroup(this.group.groupname, this.username);
+    this.postService.selectedGroups = []; //since no longer member
   }
 
   navToUser(event) {

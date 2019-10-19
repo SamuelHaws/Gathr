@@ -4,17 +4,22 @@
     <div class="holder">
       <as-split unit="percent" [direction]="direction" (dragEnd)="dragEnd('percent', $event)" #split="asSplit"
         style="height: 100%">
-        <as-split-area size="60" #area1="asSplitArea" style="padding-right: 15px">
-          <h2>Posts</h2>
+        <as-split-area size="60" #area1="asSplitArea" style="padding-right: 15px" class="pt-2">
           <ng-container *ngFor="let post of posts">
             <div class="card">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
-                  <div class="post-info">
-                    <a href="{{post.link}}">
-                      <h5 class="card-title">{{post.title}}</h5>
-                    </a>
-                    <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
+                  <div class="d-flex align-items-center">
+
+                    <div class="votes mr-3">
+                      Votes
+                    </div>
+                    <div class="post-info">
+                      <a href="{{post.link}}">
+                        <h5 class="card-title">{{post.title}}</h5>
+                      </a>
+                      <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
+                    </div>
                   </div>
                   <div class="post-comment">
                     <a routerLink="/p/{{post.id}}" class="btn btn-primary">View Comments</a>
@@ -42,7 +47,7 @@
             </as-split-area>
 
             <as-split-area size="10" class="pt-2">
-              <div id="chatbox" class="py-2">
+              <div id="chatbox" class="py-2" *ngIf="isLoggedIn">
                 <input autocomplete="off" type="text" name="chatInput" id="chatInput" class="form-control"
                   placeholder="Send message..." [(ngModel)]="chatInput" (keyup.enter)="chatSubmit()">
               </div>
