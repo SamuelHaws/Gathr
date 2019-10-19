@@ -37,7 +37,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     description: '',
     owner: ''
   };
-  posts: Post[];
+  posts: Post[] = [];
   chats: Chat[];
   chatInput: string = '';
   direction: string = 'horizontal';
@@ -83,6 +83,53 @@ export class GroupComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(group => {
         this.group = group;
+        // load current user (for adding chats and fetching votes)
+        this.authSubscription = this.authService
+          .getAuth()
+          .pipe(take(1))
+          .subscribe(auth => {
+            if (auth) {
+              this.isLoggedIn = true;
+              this.username = auth.displayName;
+              this.isOwner = this.group.owner === this.username;
+              this.memberSubscription = this.groupService
+                .getMember(this.route.snapshot.params['id'], this.username)
+                .subscribe(member => {
+                  this.member = member;
+                });
+              // load posts for group
+              this.postSubscription = this.postService
+                .getPostIdsByGroupName(this.route.snapshot.params['id'])
+                .pipe(take(1))
+                .subscribe(postIds => {
+                  postIds.forEach(postId => {
+                    this.postService
+                      .getPost(postId)
+                      .pipe(take(1))
+                      .subscribe(post => {
+                        this.posts.push(post);
+                        // Get current user, fetch existing upvotes/downvotes
+                        this.userService
+                          .getUser(this.username)
+                          .pipe(take(1))
+                          .subscribe(user => {
+                            user.votes.forEach(vote => {
+                              // Should never be undefined
+                              let post = this.posts.find(post => {
+                                return post.id === vote.post;
+                              });
+                              if (vote.voteDirection === 1)
+                                post.upvoteToggled = true;
+                              else if (vote.voteDirection === 0)
+                                post.downvoteToggled = true;
+                            });
+                          });
+                      });
+                  });
+                });
+            }
+          });
+
         // populate roster
         this.rosterSubscription = this.groupService
           .getRoster(this.group.groupname)
@@ -101,43 +148,6 @@ export class GroupComponent implements OnInit, OnDestroy {
     // load chats for group
     this.chatSubscription = this.groupService.getChats().subscribe(chats => {
       this.chats = chats;
-    });
-
-    // load posts for group
-    console.log(this.route.snapshot.params['id']);
-    this.postSubscription = this.postService
-      .getPostsByGroupName(this.route.snapshot.params['id'])
-      .pipe(take(1)) //no more auto refresh posts
-      .subscribe(posts => {
-        this.posts = posts;
-        console.log(this.posts);
-      });
-
-    // load current user (for adding chats)
-    this.authSubscription = this.authService.getAuth().subscribe(auth => {
-      if (auth) {
-        this.isLoggedIn = true;
-        this.username = auth.displayName;
-        this.isOwner = this.group.owner === this.username;
-        this.memberSubscription = this.groupService
-          .getMember(this.route.snapshot.params['id'], this.username)
-          .subscribe(member => {
-            this.member = member;
-          });
-        // Get current user, fetch existing upvotes/downvotes
-        this.userService
-          .getUser(this.username)
-          .pipe(take(1))
-          .subscribe(user => {
-            user.votes.forEach(vote => {
-              let post = this.posts.find(post => {
-                return post.id === vote.post;
-              });
-              if (vote.voteDirection === 1) post.upvoteToggled = true;
-              else if (vote.voteDirection === 0) post.downvoteToggled = true;
-            });
-          });
-      }
     });
 
     // load users for invite search
@@ -192,7 +202,6 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   refreshMembers() {
-    console.log(this.posts);
     // Owner can't invite himself or existing members
     this.usersToInvite = this.usersToInvite.filter(user => {
       return (
@@ -212,7 +221,13 @@ export class GroupComponent implements OnInit, OnDestroy {
     if (!post.upvoteToggled) post.upvotes++;
     else post.upvotes--;
     post.upvoteToggled = !post.upvoteToggled;
-    this.postService.updatePost(post);
+
+    // Spread operator makes deep copy of object
+    // Need this to always have DB entry toggled
+    // attributes as false, but still update vote counts.
+    let postToUpdate = { ...post };
+    postToUpdate.upvoteToggled = false;
+    this.postService.updatePost(postToUpdate);
   }
 
   downvoteClick(post) {
@@ -223,6 +238,8 @@ export class GroupComponent implements OnInit, OnDestroy {
     if (!post.downvoteToggled) post.downvotes++;
     else post.downvotes--;
     post.downvoteToggled = !post.downvoteToggled;
-    this.postService.updatePost(post);
+    let postToUpdate = { ...post };
+    postToUpdate.downvoteToggled = false;
+    this.postService.updatePost(postToUpdate);
   }
 }

@@ -17,17 +17,17 @@ import { Group } from '../models/Group';
 export class PostService {
   postsCollection: AngularFirestoreCollection<Post>;
   postDoc: AngularFirestoreDocument<Post>;
-  postIds: string[];
-  post: Observable<Post>;
-  posts: Observable<Post[]>;
-  comments: Observable<Comment[]>;
+  post$: Observable<Post>;
+  posts$: Observable<Post[]>;
+  postIds: Observable<string[]>;
+  comments$: Observable<Comment[]>;
   feedsCollection: AngularFirestoreCollection<Feed>;
   feed: Feed = {
     id: '',
     group: '',
     post: ''
   };
-  feeds: Observable<Feed[]>;
+  feeds$: Observable<Feed[]>;
   postForm: PostForm;
   postToAdd: Post = {
     title: '',
@@ -61,7 +61,7 @@ export class PostService {
   getPost(postId: string): Observable<Post> {
     this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
 
-    this.post = this.postDoc.snapshotChanges().pipe(
+    this.post$ = this.postDoc.snapshotChanges().pipe(
       map(action => {
         if (action.payload.exists === false) {
           return null;
@@ -72,7 +72,7 @@ export class PostService {
         }
       })
     );
-    return this.post;
+    return this.post$;
   }
 
   updatePost(post: Post) {
@@ -82,29 +82,19 @@ export class PostService {
 
   // Get feeds with matching groupName, then fetch corresponding
   // Posts from PostsCollection
-  getPostsByGroupName(groupName: string) {
-    let tempPostArray: Post[] = [];
-    // Query feeds
-    this.feeds = this.afs
-      .collection('feeds', ref =>
-        ref.where('group', '==', groupName).orderBy('createdAt', 'desc')
-      )
-      .valueChanges();
-    this.feeds.pipe(take(1)).subscribe(feeds => {
-      // Create array of postIds from the feeds
-      feeds
-        .map(feed => feed.post)
-        // Get Posts by PostIds
-        .map(postId =>
-          this.getPost(postId)
-            .pipe(take(1))
-            .subscribe(post => {
-              tempPostArray.push(post);
-            })
-        );
-    });
-    this.posts = of(tempPostArray);
-    return this.posts;
+  getPostIdsByGroupName(groupName: string): Observable<string[]> {
+    this.postIds = this.afs
+      .collection('feeds', ref => ref.where('group', '==', groupName))
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as Feed;
+            return data.post;
+          });
+        })
+      );
+    return this.postIds;
   }
 
   getComments(postId: string) {

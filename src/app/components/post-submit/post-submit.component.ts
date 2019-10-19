@@ -9,6 +9,8 @@ import { Group } from 'src/app/models/Group';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { UserService } from 'src/app/services/user.service';
+import { Vote } from 'src/app/models/Vote';
 
 @Component({
   selector: 'app-post-submit',
@@ -31,6 +33,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
     private flashMessage: FlashMessagesService,
     private postService: PostService,
     private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     private afs: AngularFirestore
   ) {}
@@ -38,7 +41,6 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.post = this.postService.postToAdd;
     this.selectedGroups = this.postService.selectedGroups;
-    console.log(this.selectedGroups);
     this.authSubscription = this.authService
       .getAuth()
       .pipe(take(1))
@@ -72,7 +74,15 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
       this.post.id = this.afs.createId();
       this.post.upvotes = 1;
       this.post.downvotes = 0;
-      this.post.upvoteToggled = true;
+      // Add vote to user
+      this.userService
+        .getUser(this.post.owner)
+        .pipe(take(1))
+        .subscribe(user => {
+          let vote: Vote = { post: this.post.id, voteDirection: 1 };
+          user.votes.push(vote);
+          this.userService.updateUser(user);
+        });
       // Add the post to db
       this.postService.addPost(this.post);
       // Create feeds
