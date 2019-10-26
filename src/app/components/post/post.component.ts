@@ -17,6 +17,8 @@ export class PostComponent implements OnInit, OnDestroy {
     owner: ''
   };
   comments: Comment[] = [];
+  comment: Comment;
+  commentInput: string = '';
   postSubscription: Subscription;
 
   constructor(
@@ -36,5 +38,10 @@ export class PostComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.postSubscription) this.postSubscription.unsubscribe();
+  }
+
+  addComment(comment: Comment) {
+    console.log('yeet');
+    this.postService.addComment(this.post.id, comment);
   }
 }

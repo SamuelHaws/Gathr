@@ -48,6 +48,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     }
   };
   isOwner: boolean;
+  commentCount: number;
 
   upvoteToggled: boolean;
   downvoteToggled: boolean;

@@ -28,7 +28,6 @@ export class PostService {
     post: ''
   };
   feeds$: Observable<Feed[]>;
-  postForm: PostForm;
   postToAdd: Post = {
     title: '',
     body: '',
@@ -101,9 +100,9 @@ export class PostService {
     this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
     return this.postDoc.collection('comments').valueChanges();
   }
-}
 
-export interface PostForm {
-  postToAdd: Post;
-  selectedGroups: Group[];
+  addComment(postId: string, comment: Comment) {
+    this.postDoc = this.afs.doc(`posts/${postId}`);
+    this.postDoc.collection('comments').add(comment);
+  }
 }

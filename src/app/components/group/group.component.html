@@ -25,7 +25,8 @@
                       <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
                     </div>
                   </div>
-                  <div class="post-comment">
+                  <div class="post-comment d-flex flex-column">
+                    <span>{{post.commentCount}} Comments</span>
                     <a routerLink="/p/{{post.id}}" class="btn btn-primary">View Comments</a>
                   </div>
                 </div>

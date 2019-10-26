@@ -10,5 +10,5 @@ export interface Post {
   // For this.posts in Group
   upvoteToggled?: boolean;
   downvoteToggled?: boolean;
-  // comments?: Comment[];
+  commentCount?: number;
 }

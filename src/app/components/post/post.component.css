@@ -1,0 +1,5 @@
+.comment-divider {
+  border-left: 1.7px solid gray;
+  padding-right: 15px;
+  content: ' ';
+}
