@@ -4,4 +4,5 @@ export interface Comment {
   createdAt?: Date;
   level?: number;
   text?: string;
+  comments?: Comment[];
 }

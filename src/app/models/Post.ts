@@ -1,3 +1,5 @@
+import { Comment } from './Comment';
+
 export interface Post {
   id?: string;
   owner?: string;
@@ -11,4 +13,5 @@ export interface Post {
   upvoteToggled?: boolean;
   downvoteToggled?: boolean;
   commentCount?: number;
+  comments?: Comment[];
 }

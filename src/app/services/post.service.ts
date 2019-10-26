@@ -96,13 +96,13 @@ export class PostService {
     return this.postIds;
   }
 
-  getComments(postId: string) {
-    this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
-    return this.postDoc.collection('comments').valueChanges();
-  }
+  // getComments(postId: string): Observable<Comment[]> {
+  //   this.postDoc = this.afs.doc<Post>(`posts/${postId}`);
+  //   return this.postDoc.collection('comments').valueChanges();
+  // }
 
-  addComment(postId: string, comment: Comment) {
-    this.postDoc = this.afs.doc(`posts/${postId}`);
-    this.postDoc.collection('comments').add(comment);
-  }
+  // addComment(postId: string, comment: Comment) {
+  //   this.postDoc = this.afs.doc(`posts/${postId}`);
+  //   this.postDoc.collection('comments').add(comment);
+  // }
 }

@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Post } from 'src/app/models/Post';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-post',
@@ -20,9 +21,11 @@ export class PostComponent implements OnInit, OnDestroy {
   comment: Comment;
   commentInput: string = '';
   postSubscription: Subscription;
+  username: string;
 
   constructor(
     private postService: PostService,
+    private authService: AuthService,
     private route: ActivatedRoute
   ) {}
 
@@ -30,18 +33,48 @@ export class PostComponent implements OnInit, OnDestroy {
     this.postSubscription = this.postService
       .getPost(this.route.snapshot.params['id'])
       .pipe(take(1))
-      .subscribe(post => (this.post = post));
-    this.postSubscription = this.postService
-      .getComments(this.route.snapshot.params['id'])
-      .subscribe(comments => (this.comments = comments));
+      .subscribe(post => {
+        this.post = post;
+        this.comments = this.post.comments;
+      });
+    // this.postSubscription = this.postService
+    //   .getComments(this.route.snapshot.params['id'])
+    //   .subscribe(comments => (this.comments = comments));
+    this.authService
+      .getAuth()
+      .pipe(take(1))
+      .subscribe(auth => {
+        this.username = auth.displayName;
+      });
   }
 
   ngOnDestroy() {
     if (this.postSubscription) this.postSubscription.unsubscribe();
   }
 
-  addComment(comment: Comment) {
+  // Comment on Post
+  addRootComment() {
+    console.log(this.post.comments);
+    let comment = {
+      author: this.username,
+      createdAt: new Date(),
+      level: 1,
+      text: this.commentInput
+    };
+    this.post.comments.push(comment);
+    this.postService.updatePost(this.post);
+  }
+
+  // Comment on Comment
+  addChildComment(parentComment: Comment) {
+    let comment = {
+      author: this.username,
+      createdAt: new Date(),
+      level: 1,
+      text: this.commentInput
+    };
+
     console.log('yeet');
-    this.postService.addComment(this.post.id, comment);
+    // this.postService.addChildComment(this.post.id, comment);
   }
 }
