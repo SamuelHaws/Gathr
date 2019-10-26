@@ -18,10 +18,11 @@ export class PostComponent implements OnInit, OnDestroy {
     owner: ''
   };
   comments: Comment[] = [];
-  comment: Comment;
+  // comment: Comment;
   commentInput: string = '';
   postSubscription: Subscription;
   username: string;
+  subCommentCount: number;
 
   constructor(
     private postService: PostService,
@@ -35,7 +36,8 @@ export class PostComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(post => {
         this.post = post;
-        this.comments = this.post.comments;
+        // Recursively crawl comments and collect all comments
+        this.loadComments(post.comments);
       });
     // this.postSubscription = this.postService
     //   .getComments(this.route.snapshot.params['id'])
@@ -52,17 +54,28 @@ export class PostComponent implements OnInit, OnDestroy {
     if (this.postSubscription) this.postSubscription.unsubscribe();
   }
 
+  loadComments(comments: Comment[]) {
+    comments.forEach(comment => {
+      this.comments.push(comment);
+      if (comment.comments.length > 0) {
+        this.loadComments(comment.comments);
+      }
+    });
+  }
+
   // Comment on Post
   addRootComment() {
-    console.log(this.post.comments);
     let comment = {
       author: this.username,
       createdAt: new Date(),
       level: 1,
-      text: this.commentInput
+      text: this.commentInput,
+      comments: []
     };
+    this.comments.push(comment);
     this.post.comments.push(comment);
     this.postService.updatePost(this.post);
+    $('.root-comment-form-card').hide(100);
   }
 
   // Comment on Comment
@@ -70,12 +83,29 @@ export class PostComponent implements OnInit, OnDestroy {
     let comment = {
       author: this.username,
       createdAt: new Date(),
-      level: 1,
-      text: this.commentInput
+      level: parentComment.level + 1,
+      text: this.commentInput,
+      comments: []
     };
+    // if you get a weird dupe error Sam its prob in here
+    this.subCommentCount = 0;
+    this.getRecursiveSubcommentCount(parentComment);
+    this.comments.splice(
+      this.comments.indexOf(parentComment) + this.subCommentCount + 1,
+      0,
+      comment
+    );
 
-    console.log('yeet');
-    // this.postService.addChildComment(this.post.id, comment);
+    parentComment.comments.push(comment);
+    this.postService.updatePost(this.post);
+    $('.comment-comment-form-card').hide(100);
+  }
+
+  getRecursiveSubcommentCount(comment: Comment) {
+    this.subCommentCount += comment.comments.length;
+    comment.comments.forEach(innerComment => {
+      this.getRecursiveSubcommentCount(innerComment);
+    });
   }
 
   rootCommentToggle() {
@@ -85,9 +115,7 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   childCommentToggle(event) {
-    console.log(event);
     let childCommentForm = event.target.parentElement.parentElement.lastChild;
-    console.log(childCommentForm);
     this.commentInput = '';
     $(childCommentForm).toggle(100);
   }
