@@ -77,4 +77,18 @@ export class PostComponent implements OnInit, OnDestroy {
     console.log('yeet');
     // this.postService.addChildComment(this.post.id, comment);
   }
+
+  rootCommentToggle() {
+    this.commentInput = '';
+    let rootForm = $('.root-comment-form-card');
+    rootForm.toggle(100);
+  }
+
+  childCommentToggle(event) {
+    console.log(event);
+    let childCommentForm = event.target.parentElement.parentElement.lastChild;
+    console.log(childCommentForm);
+    this.commentInput = '';
+    $(childCommentForm).toggle(100);
+  }
 }

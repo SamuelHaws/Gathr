@@ -3,10 +3,10 @@
 <div class="mb-3">
   <h3>{{post.title}}</h3>
   <h5>{{post.owner}}</h5>
-  <button type="button" class="btn btn-primary">Add Comment</button>
+  <button type="button" class="btn btn-primary" (click)="rootCommentToggle()">Reply</button>
 </div>
 
-<div class="card mb-5">
+<div class="card mb-5 root-comment-form-card" style="display: none;">
   <div class="card-body">
     <div class="form-group">
       <textarea autocomplete="off" type="text" name="commentInput" id="commentInput" class="form-control"
@@ -20,10 +20,20 @@
   <div class="d-flex">
     <span class="comment-divider" *ngFor="let item of [].constructor(comment.level); let i = index">
     </span>
-    <div class="d-flex flex-column py-2">
-      <p class="card-title">{{comment.author}}<button class="btn btn-primary btn-small ml-1"
-          style="padding: 0">Reply</button></p>
+    <div class="d-flex flex-column py-2" style="width: 100%;">
+      <p class="card-title">{{comment.author}}<button class="btn btn-primary btn-small ml-1" style="padding: 0"
+          (click)="childCommentToggle($event)">Reply</button></p>
       <p class="card-text">{{comment.text}}</p>
+      <div class="card mb-5" style="display: none;">
+        <div class="card-body">
+          <div class="form-group">
+            <textarea autocomplete="off" type="text" name="commentInput" id="commentInput" class="form-control"
+              [(ngModel)]="commentInput" (keyup.enter)="chatSubmit()"></textarea>
+          </div>
+          <button type="button" class="btn btn-primary mt-2" (click)="addChildComment()">Add</button>
+        </div>
+      </div>
     </div>
+
   </div>
 </ng-container>
