@@ -109,14 +109,37 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   rootCommentToggle() {
-    this.commentInput = '';
     let rootForm = $('.root-comment-form-card');
-    rootForm.toggle(100);
+    let expanded: boolean;
+    if (rootForm.is(':visible')) {
+      expanded = true;
+    }
+    this.closeFormCards();
+    this.commentInput = '';
+
+    if (!expanded) {
+      rootForm.toggle(100);
+    }
+    $('#commentInput').focus();
   }
 
   childCommentToggle(event) {
     let childCommentForm = event.target.parentElement.parentElement.lastChild;
+    let expanded: boolean;
+    if ($(childCommentForm).is(':visible')) {
+      expanded = true;
+    }
+    this.closeFormCards();
+    let input = childCommentForm.lastChild.firstChild.lastChild;
     this.commentInput = '';
-    $(childCommentForm).toggle(100);
+    if (!expanded) {
+      $(childCommentForm).toggle(100);
+    }
+    $(input).focus();
+  }
+
+  closeFormCards() {
+    $('.root-comment-form-card').hide(100);
+    $('.comment-comment-form-card').hide(100);
   }
 }
