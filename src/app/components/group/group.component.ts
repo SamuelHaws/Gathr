@@ -14,6 +14,7 @@ import { Member } from 'src/app/models/Member';
 import * as bootstrap from 'bootstrap';
 import { User } from 'src/app/models/User';
 import { UserService } from 'src/app/services/user.service';
+import { Vote } from 'src/app/models/Vote';
 
 @Component({
   selector: 'app-group',
@@ -216,6 +217,35 @@ export class GroupComponent implements OnInit, OnDestroy {
     if (post.downvoteToggled) {
       post.downvoteToggled = false;
       post.downvotes--;
+      this.userService
+        .getUser(this.username)
+        .pipe(take(1))
+        .subscribe(user => {
+          let voteToUpdate = user.votes.find(vote => {
+            return vote.post === post.id;
+          });
+          voteToUpdate.voteDirection = 1;
+          this.userService.updateUser(user);
+        });
+    } else if (post.upvoteToggled) {
+      this.userService
+        .getUser(this.username)
+        .pipe(take(1))
+        .subscribe(user => {
+          user.votes = user.votes.filter(vote => {
+            return vote.post != post.id;
+          });
+          this.userService.updateUser(user);
+        });
+    } else {
+      this.userService
+        .getUser(this.username)
+        .pipe(take(1))
+        .subscribe(user => {
+          let vote: Vote = { post: post.id, voteDirection: 1 };
+          user.votes.push(vote);
+          this.userService.updateUser(user);
+        });
     }
     if (!post.upvoteToggled) post.upvotes++;
     else post.upvotes--;
@@ -233,6 +263,35 @@ export class GroupComponent implements OnInit, OnDestroy {
     if (post.upvoteToggled) {
       post.upvoteToggled = false;
       post.upvotes--;
+      this.userService
+        .getUser(this.username)
+        .pipe(take(1))
+        .subscribe(user => {
+          let voteToUpdate = user.votes.find(vote => {
+            return vote.post === post.id;
+          });
+          voteToUpdate.voteDirection = 0;
+          this.userService.updateUser(user);
+        });
+    } else if (post.downvoteToggled) {
+      this.userService
+        .getUser(this.username)
+        .pipe(take(1))
+        .subscribe(user => {
+          user.votes = user.votes.filter(vote => {
+            return vote.post != post.id;
+          });
+          this.userService.updateUser(user);
+        });
+    } else {
+      this.userService
+        .getUser(this.username)
+        .pipe(take(1))
+        .subscribe(user => {
+          let vote: Vote = { post: post.id, voteDirection: 0 };
+          user.votes.push(vote);
+          this.userService.updateUser(user);
+        });
     }
     if (!post.downvoteToggled) post.downvotes++;
     else post.downvotes--;

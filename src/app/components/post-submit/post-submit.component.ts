@@ -80,8 +80,6 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe(user => {
           let vote: Vote = { post: this.post.id, voteDirection: 1 };
-          console.log(vote);
-          console.log(user.votes);
           user.votes.push(vote);
           this.userService.updateUser(user);
         });
