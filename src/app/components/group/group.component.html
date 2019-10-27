@@ -19,9 +19,13 @@
                         [style.color]="post.downvoteToggled ? 'firebrick' : 'gray'"></i>
                     </div>
                     <div class="post-info">
-                      <a href="{{post.link}}">
-                        <h5 class="card-title">{{post.title}}</h5>
-                      </a>
+                      <div class="d-flex align-items-center mb-2">
+                        <a *ngIf="!post.isTextPost" href="//{{post.link}}">
+                          <h5 class="card-title mb-0">{{post.title}} </h5>
+                        </a><a *ngIf="post.isTextPost" href="{{post.link}}">
+                          <h5 class="card-title mb-0">{{post.title}} </h5>
+                        </a><i *ngIf="post.isTextPost" class="ml-1 fas fa-file-alt" style="color: gray;"></i>
+                      </div>
                       <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
                     </div>
                   </div>
@@ -39,14 +43,11 @@
             <as-split-area id="chatarea" size="90" style="border: 2px solid lightgray;" #chatarea
               [scrollTop]="chatarea.scrollHeight">
 
-              <div id="chatfeed" class="mb-auto">
+              <div id="chatfeed" class="mb-auto p-1">
                 <ng-container *ngFor="let chat of chats">
-                  <div class="card mr-3 m-1">
-                    <div class="card-body">
-                      <h5 class="card-title">{{chat.message}}</h5>
-                      <p class="card-text">{{chat.owner}}</p>
-                    </div>
-                  </div>
+                  <p>
+                    <strong>{{chat.owner}}: </strong>{{chat.message}}
+                  </p>
                 </ng-container>
               </div>
             </as-split-area>

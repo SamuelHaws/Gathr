@@ -68,6 +68,12 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
       this.post.downvotes = 0;
       this.post.commentCount = 0;
       this.post.comments = [];
+      if (this.post.link === '') {
+        this.post.isTextPost = true;
+        this.post.link = `/p/${this.post.id}`;
+      } else {
+        this.post.isTextPost = false;
+      }
       // Add vote to user
       this.userService
         .getUser(this.post.owner)

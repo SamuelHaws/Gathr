@@ -14,4 +14,5 @@ export interface Post {
   downvoteToggled?: boolean;
   commentCount?: number;
   comments?: Comment[];
+  isTextPost?: boolean;
 }
