@@ -115,14 +115,12 @@ export class GroupComponent implements OnInit, OnDestroy {
                           .pipe(take(1))
                           .subscribe(user => {
                             user.votes.forEach(vote => {
-                              // Should never be undefined
-                              let post = this.posts.find(post => {
-                                return post.id === vote.post;
-                              });
-                              if (vote.voteDirection === 1)
-                                post.upvoteToggled = true;
-                              else if (vote.voteDirection === 0)
-                                post.downvoteToggled = true;
+                              if (vote.post === post.id) {
+                                if (vote.voteDirection === 1)
+                                  post.upvoteToggled = true;
+                                else if (vote.voteDirection === 0)
+                                  post.downvoteToggled = true;
+                              }
                             });
                           });
                       });
@@ -189,7 +187,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   navToUser(event) {
-    // have to close modal to disable darkened view on navigatee
+    // have to close modal to disable darkened view on navigate
     $('#rosterModal').modal('toggle');
     this.router.navigate([`/u/${event.target.innerText}`]);
   }

@@ -47,6 +47,7 @@ export class PostService {
     post.createdAt = new Date();
     //add post to DB
     this.postsCollection.doc(post.id).set(post);
+    console.log(post);
     // Create and add feeds to DB
     this.selectedGroups.forEach(group => {
       this.feed.id = group.groupname + '|' + post.id;

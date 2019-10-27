@@ -74,6 +74,7 @@ export class PostComponent implements OnInit, OnDestroy {
     };
     this.comments.push(comment);
     this.post.comments.push(comment);
+    this.post.commentCount++;
     this.postService.updatePost(this.post);
     $('.root-comment-form-card').hide(100);
   }
@@ -87,7 +88,6 @@ export class PostComponent implements OnInit, OnDestroy {
       text: this.commentInput,
       comments: []
     };
-    // if you get a weird dupe error Sam its prob in here
     this.subCommentCount = 0;
     this.getRecursiveSubcommentCount(parentComment);
     this.comments.splice(

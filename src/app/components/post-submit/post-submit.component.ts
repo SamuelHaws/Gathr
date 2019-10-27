@@ -4,7 +4,6 @@ import { AuthService } from 'src/app/services/auth.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { Post } from 'src/app/models/Post';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
 import { Group } from 'src/app/models/Group';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -18,14 +17,7 @@ import { Vote } from 'src/app/models/Vote';
   styleUrls: ['./post-submit.component.css']
 })
 export class PostSubmitComponent implements OnInit, OnDestroy {
-  post: Post = {
-    owner: '',
-    title: '',
-    link: '',
-    body: '',
-    upvotes: 1,
-    downvotes: 0
-  };
+  post: Post;
   selectedGroups: Group[];
   authSubscription: Subscription;
 
@@ -74,12 +66,16 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
       this.post.id = this.afs.createId();
       this.post.upvotes = 1;
       this.post.downvotes = 0;
+      this.post.commentCount = 0;
+      this.post.comments = [];
       // Add vote to user
       this.userService
         .getUser(this.post.owner)
         .pipe(take(1))
         .subscribe(user => {
           let vote: Vote = { post: this.post.id, voteDirection: 1 };
+          console.log(vote);
+          console.log(user.votes);
           user.votes.push(vote);
           this.userService.updateUser(user);
         });
