@@ -62,7 +62,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
       this.post.title = value.title;
       this.post.link = value.link;
       this.post.body = value.body;
-      // auto values
+      // other values
       this.post.id = this.afs.createId();
       this.post.upvotes = 1;
       this.post.downvotes = 0;

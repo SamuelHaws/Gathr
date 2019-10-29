@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PostService } from 'src/app/services/post.service';
 import { Comment } from '../../models/Comment';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Post } from 'src/app/models/Post';
 import { AuthService } from 'src/app/services/auth.service';
+import { Group } from 'src/app/models/Group';
+import { GroupService } from 'src/app/services/group.service';
 
 @Component({
   selector: 'app-post',
@@ -23,11 +25,15 @@ export class PostComponent implements OnInit, OnDestroy {
   postSubscription: Subscription;
   username: string;
   subCommentCount: number;
+  groups: Group[] = [];
+  isMember: boolean;
 
   constructor(
     private postService: PostService,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private groupService: GroupService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -47,6 +53,31 @@ export class PostComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(auth => {
         this.username = auth.displayName;
+      });
+    // Get groups that are either public, or user is a member of
+    this.postService
+      .getGroupnamesByPostId(this.route.snapshot.params['id'])
+      .pipe(take(1))
+      .subscribe(groupnames => {
+        groupnames.forEach(groupname => {
+          let isMember: boolean;
+          this.groupService
+            .getGroup(groupname)
+            .pipe(take(1))
+            .subscribe(group => {
+              this.groupService
+                .getRoster(groupname)
+                .pipe(take(1))
+                .subscribe(roster => {
+                  if (roster.includes(this.username)) {
+                    isMember = true;
+                  }
+                  if (isMember || group.public) {
+                    this.groups.push(group);
+                  }
+                });
+            });
+        });
       });
   }
 
@@ -106,6 +137,10 @@ export class PostComponent implements OnInit, OnDestroy {
     comment.comments.forEach(innerComment => {
       this.getRecursiveSubcommentCount(innerComment);
     });
+  }
+
+  visit(group: Group) {
+    this.router.navigate([`/g/${group.groupname}`]);
   }
 
   rootCommentToggle() {

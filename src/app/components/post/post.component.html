@@ -1,9 +1,19 @@
 <div class="spacing" style="margin-top: 30px"></div>
 
-<div class="mb-3">
-  <h3>{{post.title}}</h3>
-  <h5>{{post.owner}}</h5>
-  <button type="button" class="btn btn-primary" (click)="rootCommentToggle()">Reply</button>
+<div class="d-flex justify-content-between">
+  <div class="mb-3">
+    <h3 *ngIf="!post.isTextPost"><a href="//{{post.link}}">{{post.title}}</a></h3>
+    <h3 *ngIf=" post.isTextPost">{{post.title}}</h3>
+    <h5>{{post.owner}}</h5>
+    <p>{{post.body}}</p>
+    <button type="button" class="btn btn-primary" (click)="rootCommentToggle()">Reply</button>
+  </div>
+  <ul class="list-group ml-2 mb-3">
+    <ng-container *ngFor="let group of groups">
+      <li class="list-group-item d-flex justify-content-between align-items-center">{{group.groupname}}<button
+          type="button" class="btn btn-primary ml-3" (click)="visit(group)">Visit</button></li>
+    </ng-container>
+  </ul>
 </div>
 
 <div class="card mb-5 root-comment-form-card" style="display: none;">

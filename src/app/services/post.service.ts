@@ -20,6 +20,7 @@ export class PostService {
   post$: Observable<Post>;
   posts$: Observable<Post[]>;
   postIds: Observable<string[]>;
+  groupIds$: Observable<string[]>;
   comments$: Observable<Comment[]>;
   feedsCollection: AngularFirestoreCollection<Feed>;
   feed: Feed = {
@@ -95,6 +96,21 @@ export class PostService {
         })
       );
     return this.postIds;
+  }
+
+  getGroupnamesByPostId(postId: string): Observable<string[]> {
+    this.groupIds$ = this.afs
+      .collection('feeds', ref => ref.where('post', '==', postId))
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          return changes.map(action => {
+            const data = action.payload.doc.data() as Feed;
+            return data.group;
+          });
+        })
+      );
+    return this.groupIds$;
   }
 
   // getComments(postId: string): Observable<Comment[]> {
