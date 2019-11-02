@@ -97,5 +97,17 @@ export class UserService {
       });
   }
 
+  userExists(username: string): Observable<boolean> {
+    return this.usersCollection.doc(username).snapshotChanges().pipe(
+      map(action => {
+        if (action.payload.exists === false) {
+          return false;
+        } else {
+          return true;
+        }
+      })
+    );
+  }
+
   // TODO: Implement user delete
 }

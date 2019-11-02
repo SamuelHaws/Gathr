@@ -60,7 +60,7 @@ export class AddGroupComponent implements OnInit, OnDestroy {
       // this.group.public = value.public;
       // Add the group to db
       this.groupService.addGroup(this.group).pipe(take(1)).subscribe(added => {
-        if (added === true) {
+        if (added) {
           // Owner automatically joins
           this.groupService.joinGroup(this.group.groupname, this.group.owner);
           this.flashMessage.show('New group added!', {
@@ -69,7 +69,7 @@ export class AddGroupComponent implements OnInit, OnDestroy {
           });
           this.router.navigate(['/']);
         }
-        else if (!added) {
+        else {
           this.flashMessage.show(`Group "${this.group.groupname}" already exists.`, {
             cssClass: 'alert-danger',
             timeout: 3500
