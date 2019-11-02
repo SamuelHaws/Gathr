@@ -18,7 +18,6 @@ export class PostComponent implements OnInit, OnDestroy {
     owner: ''
   };
   comments: Comment[] = [];
-  // comment: Comment;
   commentInput: string = '';
   postSubscription: Subscription;
   username: string;
@@ -39,9 +38,6 @@ export class PostComponent implements OnInit, OnDestroy {
         // Recursively crawl comments and collect all comments
         this.loadComments(post.comments);
       });
-    // this.postSubscription = this.postService
-    //   .getComments(this.route.snapshot.params['id'])
-    //   .subscribe(comments => (this.comments = comments));
     this.authService
       .getAuth()
       .pipe(take(1))
@@ -97,6 +93,7 @@ export class PostComponent implements OnInit, OnDestroy {
     );
 
     parentComment.comments.push(comment);
+    this.post.commentCount++;
     this.postService.updatePost(this.post);
     $('.comment-comment-form-card').hide(100);
   }
