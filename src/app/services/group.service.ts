@@ -4,7 +4,7 @@ import {
   AngularFirestoreDocument,
   AngularFirestore
 } from 'angularfire2/firestore';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import { Group } from '../models/Group';
@@ -45,9 +45,19 @@ export class GroupService {
     this.membersCollection = this.afs.collection('members');
   }
 
-  addGroup(group: Group) {
-    // this.groupsCollection.add(group);
-    this.groupsCollection.doc(group.groupname).set(group);
+  // returns a boolean observable which indicates whether or not a group was 
+  // added, based on whether or not group with groupname already exists
+  addGroup(group: Group): Observable<boolean> {
+    return this.groupsCollection.doc(group.groupname).snapshotChanges().pipe(
+      map(action => {
+        if (action.payload.exists === false) {
+          this.groupsCollection.doc(group.groupname).set(group);
+          return true;
+        } else {
+          return false;
+        }
+      })
+    );
   }
 
   getGroups(): Observable<Group[]> {
