@@ -5,6 +5,7 @@ import { Group } from '../../models/Group';
 import { GroupService } from 'src/app/services/group.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-group',
@@ -58,14 +59,24 @@ export class AddGroupComponent implements OnInit, OnDestroy {
       this.group.description = value.description;
       // this.group.public = value.public;
       // Add the group to db
-      this.groupService.addGroup(this.group);
-      // Owner automatically joins
-      this.groupService.joinGroup(this.group.groupname, this.group.owner);
-      this.flashMessage.show('New group added!', {
-        cssClass: 'alert-success',
-        timeout: 3500
+      this.groupService.addGroup(this.group).pipe(take(1)).subscribe(added => {
+        if (added) {
+          // Owner automatically joins
+          this.groupService.joinGroup(this.group.groupname, this.group.owner);
+          this.flashMessage.show('New group added!', {
+            cssClass: 'alert-success',
+            timeout: 3500
+          });
+          this.router.navigate(['/']);
+        }
+        else {
+          this.flashMessage.show(`Group "${this.group.groupname}" already exists.`, {
+            cssClass: 'alert-danger',
+            timeout: 3500
+          });
+        }
       });
-      this.router.navigate(['/']);
+      
     }
   }
 }

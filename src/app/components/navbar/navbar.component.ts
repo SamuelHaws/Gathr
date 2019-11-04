@@ -20,24 +20,6 @@ export class NavbarComponent implements OnInit {
     private flashMessage: FlashMessagesService
   ) {}
 
-  // SAVED FOR LATER, USE SOMETHING LIKE THIS TO GET FULL USER DETAILS
-
-  // ngOnInit() {
-  //   this.authService.getAuth().subscribe(auth => {
-  //     if (auth) {
-  //       this.isLoggedIn = true;
-  //       this.userService.getUser(auth.displayName).subscribe(user => {
-  //         this.loggedInUsername = user.username;
-  //       });
-  //     } else {
-  //       this.isLoggedIn = false;
-  //     }
-  //   });
-  // }
-
-  // RIGHT NOW we only need the username,
-  // which can be retrieved by auth service
-
   ngOnInit() {
     this.authService.getAuth().subscribe(auth => {
       if (auth) {
