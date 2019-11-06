@@ -300,4 +300,38 @@ export class GroupComponent implements OnInit, OnDestroy {
     postToUpdate.downvoteToggled = false;
     this.postService.updatePost(postToUpdate);
   }
+
+  refreshPosts() {
+    this.postSubscription = this.postService
+      .getPostIdsByGroupName(this.route.snapshot.params['id'])
+      .pipe(take(1))
+      .subscribe(postIds => {
+        postIds.forEach(postId => {
+          this.postService
+            .getPost(postId)
+            .pipe(take(1))
+            .subscribe(post => {
+              if (
+                !this.posts.find(findpost => {
+                  return findpost.id === post.id;
+                })
+              )
+                this.posts.push(post);
+              // Get current user, fetch existing upvotes/downvotes
+              this.userService
+                .getUser(this.username)
+                .pipe(take(1))
+                .subscribe(user => {
+                  user.votes.forEach(vote => {
+                    if (vote.post === post.id) {
+                      if (vote.voteDirection === 1) post.upvoteToggled = true;
+                      else if (vote.voteDirection === 0)
+                        post.downvoteToggled = true;
+                    }
+                  });
+                });
+            });
+        });
+      });
+  }
 }
