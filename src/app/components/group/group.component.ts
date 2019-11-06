@@ -214,9 +214,18 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   upvoteClick(post) {
+    let incrementUpvote: boolean;
+    let decrementUpvote: boolean;
+    let decrementDownvote: boolean;
+    // Spread operator makes deep copy of object
+    // Need this to always have DB entry toggled
+    // attributes as false, but still update vote counts.
+    let postToUpdate = { ...post };
+
     if (post.downvoteToggled) {
       post.downvoteToggled = false;
       post.downvotes--;
+      decrementDownvote = true;
       this.userService
         .getUser(this.username)
         .pipe(take(1))
@@ -247,22 +256,32 @@ export class GroupComponent implements OnInit, OnDestroy {
           this.userService.updateUser(user);
         });
     }
-    if (!post.upvoteToggled) post.upvotes++;
-    else post.upvotes--;
+    if (!post.upvoteToggled) {
+      post.upvotes++;
+      incrementUpvote = true;
+    } else {
+      post.upvotes--;
+      decrementUpvote = true;
+    }
     post.upvoteToggled = !post.upvoteToggled;
 
-    // Spread operator makes deep copy of object
-    // Need this to always have DB entry toggled
-    // attributes as false, but still update vote counts.
-    let postToUpdate = { ...post };
     postToUpdate.upvoteToggled = false;
+    if (decrementDownvote) postToUpdate.downvotes--;
+    if (incrementUpvote) postToUpdate.upvotes++;
+    if (decrementUpvote) postToUpdate.upvotes--;
     this.postService.updatePost(postToUpdate);
   }
 
   downvoteClick(post) {
+    let decrementUpvote: boolean;
+    let incrementDownvote: boolean;
+    let decrementDownvote: boolean;
+    let postToUpdate = { ...post };
+
     if (post.upvoteToggled) {
       post.upvoteToggled = false;
       post.upvotes--;
+      decrementUpvote = true;
       this.userService
         .getUser(this.username)
         .pipe(take(1))
@@ -293,11 +312,19 @@ export class GroupComponent implements OnInit, OnDestroy {
           this.userService.updateUser(user);
         });
     }
-    if (!post.downvoteToggled) post.downvotes++;
-    else post.downvotes--;
+    if (!post.downvoteToggled) {
+      post.downvotes++;
+      incrementDownvote = true;
+    } else {
+      post.downvotes--;
+      decrementDownvote = true;
+    }
     post.downvoteToggled = !post.downvoteToggled;
-    let postToUpdate = { ...post };
+
     postToUpdate.downvoteToggled = false;
+    if (decrementUpvote) postToUpdate.upvotes--;
+    if (incrementDownvote) postToUpdate.downvotes++;
+    if (decrementDownvote) postToUpdate.downvotes--;
     this.postService.updatePost(postToUpdate);
   }
 
