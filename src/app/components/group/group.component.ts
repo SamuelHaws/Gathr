@@ -266,6 +266,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     post.upvoteToggled = !post.upvoteToggled;
 
     postToUpdate.upvoteToggled = false;
+    postToUpdate.downvoteToggled = false;
     if (decrementDownvote) postToUpdate.downvotes--;
     if (incrementUpvote) postToUpdate.upvotes++;
     if (decrementUpvote) postToUpdate.upvotes--;
@@ -321,6 +322,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     }
     post.downvoteToggled = !post.downvoteToggled;
 
+    postToUpdate.upvoteToggled = false;
     postToUpdate.downvoteToggled = false;
     if (decrementUpvote) postToUpdate.upvotes--;
     if (incrementDownvote) postToUpdate.downvotes++;
