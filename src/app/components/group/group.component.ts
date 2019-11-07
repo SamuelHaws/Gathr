@@ -124,6 +124,23 @@ export class GroupComponent implements OnInit, OnDestroy {
                               }
                             });
                           });
+                        let lastPost = this.posts.find(findpost => {
+                          return findpost.id === post.id;
+                        });
+                        // after last post is added or updated, re-apply current sort
+                        if (
+                          this.posts.indexOf(lastPost) ===
+                          this.posts.length - 1
+                        ) {
+                          let selectedOption: string = $(
+                            "input[type='radio']:checked"
+                          ).attr('id');
+                          if (selectedOption === 'topradio') this.sortByTop();
+                          if (selectedOption === 'newestradio')
+                            this.sortByNewest();
+                          if (selectedOption === 'oldestradio')
+                            this.sortByOldest();
+                        }
                       });
                   });
                 });
