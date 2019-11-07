@@ -217,10 +217,6 @@ export class GroupComponent implements OnInit, OnDestroy {
     let incrementUpvote: boolean;
     let decrementUpvote: boolean;
     let decrementDownvote: boolean;
-    // Spread operator makes deep copy of object
-    // Need this to always have DB entry toggled
-    // attributes as false, but still update vote counts.
-    // let postToUpdate = { ...post };
 
     if (post.downvoteToggled) {
       post.downvoteToggled = false;
@@ -284,7 +280,6 @@ export class GroupComponent implements OnInit, OnDestroy {
     let decrementUpvote: boolean;
     let incrementDownvote: boolean;
     let decrementDownvote: boolean;
-    // let postToUpdate = { ...post };
 
     if (post.upvoteToggled) {
       post.upvoteToggled = false;
