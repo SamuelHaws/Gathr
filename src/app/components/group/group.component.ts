@@ -220,7 +220,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     // Spread operator makes deep copy of object
     // Need this to always have DB entry toggled
     // attributes as false, but still update vote counts.
-    let postToUpdate = { ...post };
+    // let postToUpdate = { ...post };
 
     if (post.downvoteToggled) {
       post.downvoteToggled = false;
@@ -265,19 +265,26 @@ export class GroupComponent implements OnInit, OnDestroy {
     }
     post.upvoteToggled = !post.upvoteToggled;
 
-    postToUpdate.upvoteToggled = false;
-    postToUpdate.downvoteToggled = false;
-    if (decrementDownvote) postToUpdate.downvotes--;
-    if (incrementUpvote) postToUpdate.upvotes++;
-    if (decrementUpvote) postToUpdate.upvotes--;
-    this.postService.updatePost(postToUpdate);
+    let postToUpdate: Post;
+    this.postService
+      .getPost(post.id)
+      .pipe(take(1))
+      .subscribe(subpost => {
+        postToUpdate = subpost;
+        postToUpdate.upvoteToggled = false;
+        postToUpdate.downvoteToggled = false;
+        if (decrementDownvote) postToUpdate.downvotes--;
+        if (incrementUpvote) postToUpdate.upvotes++;
+        if (decrementUpvote) postToUpdate.upvotes--;
+        this.postService.updatePost(postToUpdate);
+      });
   }
 
   downvoteClick(post) {
     let decrementUpvote: boolean;
     let incrementDownvote: boolean;
     let decrementDownvote: boolean;
-    let postToUpdate = { ...post };
+    // let postToUpdate = { ...post };
 
     if (post.upvoteToggled) {
       post.upvoteToggled = false;
@@ -322,12 +329,19 @@ export class GroupComponent implements OnInit, OnDestroy {
     }
     post.downvoteToggled = !post.downvoteToggled;
 
-    postToUpdate.upvoteToggled = false;
-    postToUpdate.downvoteToggled = false;
-    if (decrementUpvote) postToUpdate.upvotes--;
-    if (incrementDownvote) postToUpdate.downvotes++;
-    if (decrementDownvote) postToUpdate.downvotes--;
-    this.postService.updatePost(postToUpdate);
+    let postToUpdate: Post;
+    this.postService
+      .getPost(post.id)
+      .pipe(take(1))
+      .subscribe(subpost => {
+        postToUpdate = subpost;
+        postToUpdate.upvoteToggled = false;
+        postToUpdate.downvoteToggled = false;
+        if (decrementUpvote) postToUpdate.upvotes--;
+        if (incrementDownvote) postToUpdate.downvotes++;
+        if (decrementDownvote) postToUpdate.downvotes--;
+        this.postService.updatePost(postToUpdate);
+      });
   }
 
   refreshPosts() {
