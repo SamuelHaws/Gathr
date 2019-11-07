@@ -364,6 +364,19 @@ export class GroupComponent implements OnInit, OnDestroy {
                 });
                 this.posts[this.posts.indexOf(postToUpdate)] = post;
               }
+              let lastPost = this.posts.find(findpost => {
+                return findpost.id === post.id;
+              });
+              // after last post is added or updated, re-apply current sort
+              if (this.posts.indexOf(lastPost) === this.posts.length - 1) {
+                let selectedOption: string = $(
+                  "input[type='radio']:checked"
+                ).attr('id');
+                if (selectedOption === 'topradio') this.sortByTop();
+                if (selectedOption === 'newestradio') this.sortByNewest();
+                if (selectedOption === 'oldestradio') this.sortByOldest();
+              }
+
               // Get current user, fetch existing upvotes/downvotes
               this.userService
                 .getUser(this.username)
@@ -380,5 +393,24 @@ export class GroupComponent implements OnInit, OnDestroy {
             });
         });
       });
+  }
+
+  /****************************** Sort Methods ******************************/
+  sortByTop() {
+    this.posts = this.posts.sort(
+      (a, b) => b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
+    );
+  }
+
+  sortByNewest() {
+    this.posts = this.posts.sort((a, b) =>
+      a.createdAt > b.createdAt ? -1 : a < b ? 1 : 0
+    );
+  }
+
+  sortByOldest() {
+    this.posts = this.posts.sort((a, b) =>
+      b.createdAt > a.createdAt ? -1 : b < a ? 1 : 0
+    );
   }
 }

@@ -9,13 +9,13 @@
             <div id="post-sort" class="d-flex justify-content-around" style="width: 50%;">
               <h6>Sort by: </h6>
               <div class="radio">
-                <label><input type="radio" name="sortradio" checked> Top</label>
+                <label><input type="radio" id="topradio" name="sortradio" (click)="sortByTop()" checked> Top</label>
               </div>
               <div class="radio">
-                <label><input type="radio" name="sortradio"> Newest</label>
+                <label><input type="radio" id="newestradio" name="sortradio" (click)="sortByNewest()"> Newest</label>
               </div>
               <div class="radio">
-                <label><input type="radio" name="sortradio"> Oldest</label>
+                <label><input type="radio" id="oldestradio" name="sortradio" (click)="sortByOldest()"> Oldest</label>
               </div>
             </div>
             <button class="btn btn-primary" type="button" (click)=refreshPosts()>Refresh</button>
