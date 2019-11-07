@@ -344,6 +344,9 @@ export class GroupComponent implements OnInit, OnDestroy {
       });
   }
 
+  // Fetch posts from DB, if we can't find a post in this.posts, add it.
+  // Otherwise, refresh found post.
+  // Finally, refresh upvote/downvote toggle-state.
   refreshPosts() {
     this.postSubscription = this.postService
       .getPostIdsByGroupName(this.route.snapshot.params['id'])
@@ -360,6 +363,12 @@ export class GroupComponent implements OnInit, OnDestroy {
                 })
               )
                 this.posts.push(post);
+              else {
+                let postToUpdate = this.posts.find(findpost => {
+                  return findpost.id === post.id;
+                });
+                this.posts[this.posts.indexOf(postToUpdate)] = post;
+              }
               // Get current user, fetch existing upvotes/downvotes
               this.userService
                 .getUser(this.username)
