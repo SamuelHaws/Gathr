@@ -17,7 +17,7 @@ import { Vote } from 'src/app/models/Vote';
   styleUrls: ['./post-submit.component.css']
 })
 export class PostSubmitComponent implements OnInit, OnDestroy {
-  post: Post;
+  post: Post = {};
   selectedGroups: Group[];
   authSubscription: Subscription;
 
@@ -68,6 +68,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
       this.post.downvotes = 0;
       this.post.commentCount = 0;
       this.post.comments = [];
+      this.post.isDisabled = false;
       if (this.post.link === '') {
         this.post.isTextPost = true;
         this.post.link = `/p/${this.post.id}`;
@@ -85,6 +86,7 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
         });
       // Add the post to db
       this.postService.addPost(this.post);
+      this.postService.postToAdd = {};
       // Create feeds
       this.flashMessage.show('New post added!', {
         cssClass: 'alert-success',

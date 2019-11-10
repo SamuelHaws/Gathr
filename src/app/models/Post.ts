@@ -9,10 +9,12 @@ export interface Post {
   body?: string;
   upvotes?: number;
   downvotes?: number;
-  // For this.posts in Group
-  upvoteToggled?: boolean;
-  downvoteToggled?: boolean;
   commentCount?: number;
   comments?: Comment[];
   isTextPost?: boolean;
+  isDisabled?: boolean;
+  
+  // For this.posts in Group
+  upvoteToggled?: boolean;
+  downvoteToggled?: boolean;
 }

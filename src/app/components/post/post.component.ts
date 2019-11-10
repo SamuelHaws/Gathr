@@ -26,6 +26,7 @@ export class PostComponent implements OnInit, OnDestroy {
   subCommentCount: number;
   groups: Group[] = [];
   isMember: boolean;
+  rootEditState: boolean = false;
 
   constructor(
     private postService: PostService,
@@ -90,19 +91,27 @@ export class PostComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Comment on Post
-  addRootComment() {
-    let comment = {
-      author: this.username,
-      createdAt: new Date(),
-      level: 1,
-      text: this.commentInput,
-      comments: []
-    };
-    this.comments.push(comment);
-    this.post.comments.push(comment);
-    this.post.commentCount++;
-    this.postService.updatePost(this.post);
+  // Comment on Post or edit Post
+  rootSubmit() {
+    if (this.rootEditState) {
+      // Update body
+      this.post.body = this.commentInput;
+      this.postService.updatePost(this.post);
+      this.commentInput = '';
+      this.rootEditState = false;
+    } else {
+      let comment = {
+        author: this.username,
+        createdAt: new Date(),
+        level: 1,
+        text: this.commentInput,
+        comments: []
+      };
+      this.comments.push(comment);
+      this.post.comments.push(comment);
+      this.post.commentCount++;
+      this.postService.updatePost(this.post);
+    }
     $('.root-comment-form-card').hide(100);
   }
 
@@ -141,13 +150,19 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   rootCommentToggle() {
+    console.log(this.rootEditState);
     let rootForm = $('.root-comment-form-card');
     let expanded: boolean;
     if (rootForm.is(':visible')) {
       expanded = true;
     }
     this.closeFormCards();
-    this.commentInput = '';
+    if (this.rootEditState) {
+      this.commentInput = this.post.body;
+    }
+    else {
+      this.commentInput = '';
+    }
 
     if (!expanded) {
       rootForm.toggle(100);
@@ -173,5 +188,33 @@ export class PostComponent implements OnInit, OnDestroy {
   closeFormCards() {
     $('.root-comment-form-card').hide(100);
     $('.comment-comment-form-card').hide(100);
+  }
+
+  toggleAdd() {
+    this.rootEditState = false;
+    this.rootCommentToggle();
+  }
+
+  toggleRootEditState() {
+    let rootForm = $('.root-comment-form-card');
+    if (rootForm.is(':visible')) {
+      this.rootEditState = false;
+    } else {
+      this.rootEditState = !this.rootEditState;
+    }
+    
+    this.rootCommentToggle();
+  }
+
+  deleteRoot() {
+    if (this.comments.length == 0) {
+      this.postService.deletePost(this.post.id);
+      this.router.navigate(['/']);
+    }
+    else {
+      this.post.body = '[deleted]';
+      this.post.isDisabled = true;
+      this.postService.updatePost(this.post);
+    }
   }
 }

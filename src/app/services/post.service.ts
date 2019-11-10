@@ -48,7 +48,6 @@ export class PostService {
     post.createdAt = new Date();
     //add post to DB
     this.postsCollection.doc(post.id).set(post);
-    console.log(post);
     // Create and add feeds to DB
     this.selectedGroups.forEach(group => {
       this.feed.id = group.groupname + '|' + post.id;
@@ -79,6 +78,18 @@ export class PostService {
   updatePost(post: Post) {
     this.postDoc = this.afs.doc(`posts/${post.id}`);
     this.postDoc.update(post);
+  }
+
+  deletePost(postId: string) {
+    // Delete from Posts
+    this.postDoc = this.afs.doc(`posts/${postId}`);
+    this.postDoc.delete();
+    // Delete relevant Feeds
+    this.afs.collection('feeds', ref => ref.where('post', '==', postId)).valueChanges().pipe(take(1)).subscribe(feeds => {
+      feeds.map((feed: Feed) => {
+        this.afs.doc(`feeds/${feed.id}`).delete();
+      })
+    })
   }
 
   // Get feeds with matching groupName, then fetch corresponding
