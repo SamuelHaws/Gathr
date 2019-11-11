@@ -8,6 +8,7 @@ import { Post } from 'src/app/models/Post';
 import { AuthService } from 'src/app/services/auth.service';
 import { Group } from 'src/app/models/Group';
 import { GroupService } from 'src/app/services/group.service';
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-post',
@@ -26,7 +27,8 @@ export class PostComponent implements OnInit, OnDestroy {
   subCommentCount: number;
   groups: Group[] = [];
   isMember: boolean;
-  rootEditState: boolean = false;
+  rootEditState: boolean;
+  childEditState: boolean;
 
   constructor(
     private postService: PostService,
@@ -101,11 +103,16 @@ export class PostComponent implements OnInit, OnDestroy {
       this.rootEditState = false;
     } else {
       let comment = {
+        // comment is part of post, need uuid library to make id
+        // (as opposed to afs)
+        id: uuid.v4(),
         author: this.username,
         createdAt: new Date(),
         level: 1,
         text: this.commentInput,
-        comments: []
+        comments: [],
+        parentId: this.post.id,
+        isDisabled: false
       };
       this.comments.push(comment);
       this.post.comments.push(comment);
@@ -116,25 +123,36 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   // Comment on Comment
-  addChildComment(parentComment: Comment) {
-    let comment = {
-      author: this.username,
-      createdAt: new Date(),
-      level: parentComment.level + 1,
-      text: this.commentInput,
-      comments: []
-    };
-    this.subCommentCount = 0;
-    this.getRecursiveSubcommentCount(parentComment);
-    this.comments.splice(
-      this.comments.indexOf(parentComment) + this.subCommentCount + 1,
-      0,
-      comment
-    );
+  childSubmit(parentComment: Comment) {
+    if (this.childEditState) {
+      parentComment.text = this.commentInput;
+      this.postService.updatePost(this.post);
+      this.commentInput = '';
+      this.childEditState = false;
+    } else {
+      let comment = {
+        id: uuid.v4(),
+        author: this.username,
+        createdAt: new Date(),
+        level: parentComment.level + 1,
+        text: this.commentInput,
+        comments: [],
+        parentId: parentComment.id,
+        isDisabled: false
+      };
+      this.subCommentCount = 0;
+      this.getRecursiveSubcommentCount(parentComment);
+      this.comments.splice(
+        this.comments.indexOf(parentComment) + this.subCommentCount + 1,
+        0,
+        comment
+      );
 
-    parentComment.comments.push(comment);
-    this.post.commentCount++;
-    this.postService.updatePost(this.post);
+      parentComment.comments.push(comment);
+      this.post.commentCount++;
+      this.postService.updatePost(this.post);
+    }
+
     $('.comment-comment-form-card').hide(100);
   }
 
@@ -150,7 +168,6 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   rootCommentToggle() {
-    console.log(this.rootEditState);
     let rootForm = $('.root-comment-form-card');
     let expanded: boolean;
     if (rootForm.is(':visible')) {
@@ -159,8 +176,7 @@ export class PostComponent implements OnInit, OnDestroy {
     this.closeFormCards();
     if (this.rootEditState) {
       this.commentInput = this.post.body;
-    }
-    else {
+    } else {
       this.commentInput = '';
     }
 
@@ -170,7 +186,7 @@ export class PostComponent implements OnInit, OnDestroy {
     $('#commentInput').focus();
   }
 
-  childCommentToggle(event) {
+  childCommentToggle(event, comment: Comment) {
     let childCommentForm = event.target.parentElement.parentElement.lastChild;
     let expanded: boolean;
     if ($(childCommentForm).is(':visible')) {
@@ -178,7 +194,11 @@ export class PostComponent implements OnInit, OnDestroy {
     }
     this.closeFormCards();
     let input = childCommentForm.lastChild.firstChild.lastChild;
-    this.commentInput = '';
+    if (this.childEditState) {
+      this.commentInput = comment.text;
+    } else {
+      this.commentInput = '';
+    }
     if (!expanded) {
       $(childCommentForm).toggle(100);
     }
@@ -190,7 +210,7 @@ export class PostComponent implements OnInit, OnDestroy {
     $('.comment-comment-form-card').hide(100);
   }
 
-  toggleAdd() {
+  toggleRootAdd() {
     this.rootEditState = false;
     this.rootCommentToggle();
   }
@@ -202,19 +222,48 @@ export class PostComponent implements OnInit, OnDestroy {
     } else {
       this.rootEditState = !this.rootEditState;
     }
-    
+
     this.rootCommentToggle();
   }
 
-  deleteRoot() {
+  toggleChildAdd(event, comment: Comment) {
+    this.childEditState = false;
+    this.childCommentToggle(event, comment);
+  }
+
+  toggleChildEditState(event, comment) {
+    let childCommentForm = event.target.parentElement.parentElement.lastChild;
+    if ($(childCommentForm).is(':visible')) {
+      this.childEditState = false;
+    } else {
+      this.childEditState = !this.childEditState;
+    }
+
+    this.childCommentToggle(event, comment);
+  }
+
+  deletePost() {
     if (this.comments.length == 0) {
       this.postService.deletePost(this.post.id);
       this.router.navigate(['/']);
-    }
-    else {
+    } else {
       this.post.body = '[deleted]';
       this.post.isDisabled = true;
       this.postService.updatePost(this.post);
     }
+  }
+
+  deleteComment(comment: Comment) {
+    if (comment.comments.length == 0) {
+      let parentComment = this.comments.find(findComment => {
+        return findComment.id === comment.parentId;
+      });
+      parentComment.comments.splice(parentComment.comments.indexOf(comment), 1);
+      this.comments.splice(this.comments.indexOf(comment), 1);
+    } else {
+      comment.text = '[deleted]';
+      comment.isDisabled = true;
+    }
+    this.postService.updatePost(this.post);
   }
 }

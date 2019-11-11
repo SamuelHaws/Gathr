@@ -5,4 +5,6 @@ export interface Comment {
   level?: number;
   text?: string;
   comments?: Comment[];
+  parentId?: string;
+  isDisabled?: boolean;
 }
