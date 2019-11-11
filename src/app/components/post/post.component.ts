@@ -233,13 +233,21 @@ export class PostComponent implements OnInit, OnDestroy {
 
   toggleChildEditState(event, comment) {
     let childCommentForm = event.target.parentElement.parentElement.lastChild;
-    if ($(childCommentForm).is(':visible')) {
+    if ($('.root-comment-form-card').is(':visible')) {
+      this.childEditState = true;
+    } else if ($(childCommentForm).is(':visible')) {
       this.childEditState = false;
     } else {
       this.childEditState = !this.childEditState;
     }
 
     this.childCommentToggle(event, comment);
+    // for clicking edit when already editing a different comment
+    if ($('.comment-comment-form-card').is(':visible')) {
+      this.childEditState = true;
+      console.log(comment);
+      this.commentInput = comment.text;
+    }
   }
 
   deletePost() {
@@ -255,10 +263,19 @@ export class PostComponent implements OnInit, OnDestroy {
 
   deleteComment(comment: Comment) {
     if (comment.comments.length == 0) {
-      let parentComment = this.comments.find(findComment => {
-        return findComment.id === comment.parentId;
-      });
-      parentComment.comments.splice(parentComment.comments.indexOf(comment), 1);
+      // root comment, remove from Post Comments[]
+      if (comment.level === 1) {
+        this.post.comments.splice(this.post.comments.indexOf(comment), 1);
+      } else {
+        // nested comment, remove from parentComment Comments[]
+        let parentComment = this.comments.find(findComment => {
+          return findComment.id === comment.parentId;
+        });
+        parentComment.comments.splice(
+          parentComment.comments.indexOf(comment),
+          1
+        );
+      }
       this.comments.splice(this.comments.indexOf(comment), 1);
     } else {
       comment.text = '[deleted]';
