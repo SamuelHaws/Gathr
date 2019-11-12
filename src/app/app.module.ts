@@ -27,6 +27,7 @@ import { PostComponent } from './components/post/post.component';
 import { PostSubmitComponent } from './components/post-submit/post-submit.component';
 import { GroupSelectComponent } from './components/group-select/group-select.component';
 import { MyGroupsComponent } from './components/my-groups/my-groups.component';
+import { MessagingComponent } from './components/messaging/messaging.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { MyGroupsComponent } from './components/my-groups/my-groups.component';
     PostComponent,
     PostSubmitComponent,
     GroupSelectComponent,
-    MyGroupsComponent
+    MyGroupsComponent,
+    MessagingComponent
   ],
   imports: [
     BrowserModule,

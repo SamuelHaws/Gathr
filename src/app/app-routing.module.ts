@@ -15,6 +15,7 @@ import { PostComponent } from './components/post/post.component';
 import { PostSubmitComponent } from './components/post-submit/post-submit.component';
 import { GroupSelectComponent } from './components/group-select/group-select.component';
 import { MyGroupsComponent } from './components/my-groups/my-groups.component';
+import { MessagingComponent } from './components/messaging/messaging.component';
 
 const routes: Routes = [
   // TODO: Remove authguard for dashboard, just show aggregate feed of all groups
@@ -57,6 +58,11 @@ const routes: Routes = [
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  {
+    path: 'msgs',
+    component: MessagingComponent,
+    canActivate: [AuthGuard]
+  },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: '**', component: NotFoundComponent }
 ];

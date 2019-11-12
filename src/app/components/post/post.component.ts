@@ -245,7 +245,6 @@ export class PostComponent implements OnInit, OnDestroy {
     // for clicking edit when already editing a different comment
     if ($('.comment-comment-form-card').is(':visible')) {
       this.childEditState = true;
-      console.log(comment);
       this.commentInput = comment.text;
     }
   }

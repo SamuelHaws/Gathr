@@ -11,7 +11,7 @@ export class AppComponent {
 
   constructor(private router: Router) {}
 
-  isGroupRouteActivated() {
-    return this.router.url.includes('/g/');
+  useContainer() {
+    return this.router.url.includes('/g/') || this.router.url.includes('/msgs');
   }
 }
