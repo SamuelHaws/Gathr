@@ -1,10 +1,6 @@
 <app-navbar></app-navbar>
-<!-- Don't want container margins on Group Component -->
-<div *ngIf="useContainer()">
-  <flash-messages></flash-messages>
-  <router-outlet></router-outlet>
-</div>
-<div *ngIf="!useContainer()" class="container">
+<!-- Don't want container margins on Group or Messaging Component -->
+<div [class.container]="useContainer()">
   <flash-messages></flash-messages>
   <router-outlet></router-outlet>
 </div>

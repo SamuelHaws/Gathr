@@ -12,6 +12,8 @@ export class AppComponent {
   constructor(private router: Router) {}
 
   useContainer() {
-    return this.router.url.includes('/g/') || this.router.url.includes('/msgs');
+    return (
+      !this.router.url.includes('/g/') && !this.router.url.includes('/messages')
+    );
   }
 }
