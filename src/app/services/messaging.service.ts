@@ -3,7 +3,8 @@ import { Observable } from 'rxjs';
 import { Conversation } from '../models/Conversation';
 import {
   AngularFirestoreCollection,
-  AngularFirestore
+  AngularFirestore,
+  AngularFirestoreDocument
 } from 'angularfire2/firestore';
 import { map } from 'rxjs/operators';
 import { Message } from '../models/Message';
@@ -13,8 +14,9 @@ import { Message } from '../models/Message';
 })
 export class MessagingService {
   conversations$: Observable<Conversation[]>;
-  // conversation$: Observable<Conversation>;
+  conversation$: Observable<Conversation>;
   conversationCollection: AngularFirestoreCollection<Conversation>;
+  conversationDoc: AngularFirestoreDocument<Conversation>;
 
   constructor(private afs: AngularFirestore) {
     this.conversationCollection = this.afs.collection('conversations');
@@ -35,6 +37,25 @@ export class MessagingService {
         })
       );
     return this.conversations$;
+  }
+
+  getConversation(conversationId: string): Observable<Conversation> {
+    this.conversationDoc = this.afs.doc<Conversation>(
+      `conversations/${conversationId}`
+    );
+
+    this.conversation$ = this.conversationDoc.snapshotChanges().pipe(
+      map(action => {
+        if (action.payload.exists === false) {
+          return null;
+        } else {
+          const data = action.payload.data() as Conversation;
+          data.id = action.payload.id;
+          return data;
+        }
+      })
+    );
+    return this.conversation$;
   }
 
   addConversation(conversation: Conversation) {
