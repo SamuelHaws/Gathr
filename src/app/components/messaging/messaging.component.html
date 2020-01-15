@@ -1,4 +1,4 @@
-<div class="row holder">
+<div class="row m-0 page-component">
   <div class="col-md-3 pr-0" style="background-color: #d4d4dd">
     <div class="bg-dark">
       <div class="d-flex justify-content-around align-items-center py-2" style="width: 100%">
@@ -25,7 +25,7 @@
   </div>
   <div class="col-md-9">
     <div *ngIf="conversationSelected; else defaultConversationView">
-      <as-split direction="vertical" disabled gutterSize=0 unit="percent" class="pt-2">
+      <as-split direction="vertical" disabled gutterSize=0 unit="percent" class="pt-2" style="max-height: 100%">
         <as-split-area id="messagearea" size="90" style="border: 2px solid lightgray;" #messagearea
           [scrollTop]="messagearea.scrollHeight">
 

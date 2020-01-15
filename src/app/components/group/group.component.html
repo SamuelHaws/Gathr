@@ -1,7 +1,7 @@
-<div class="row" style="margin: auto">
+<div class="row" style="margin: auto;">
   <!-- Column for posts/chat -->
   <div class="col-md-10">
-    <div class="holder">
+    <div class="page-component">
       <as-split unit="percent" [direction]="direction" (dragEnd)="dragEnd('percent', $event)" #split="asSplit"
         style="height: 100%">
         <as-split-area size="60" #area1="asSplitArea" style="padding-right: 15px" class="pt-2">
@@ -18,7 +18,7 @@
                 <label><input type="radio" id="oldestradio" name="sortradio" (click)="sortByOldest()"> Oldest</label>
               </div>
             </div>
-            <button class="btn btn-primary" type="button" (click)=refreshPosts()>Refresh</button>
+            <button class="btn btn-primary" type="button" (click)=refreshPosts()>Refresh Posts</button>
           </div>
           <ng-container *ngFor="let post of posts">
             <div class="card">
@@ -79,7 +79,7 @@
   </div>
   <!-- Column for sidebar/group info -->
   <div class="col-md-2 text-center d-flex flex-column align-items-center" style="background-color: #d4d4dd">
-    <h3 class="mt-4">{{group.groupname}}</h3>
+    <h3 class="mt-4" id="groupname">{{group.groupname}}</h3>
     <span class="mt-4">{{group.description}}</span>
     <div class="mt-1">
       <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#rosterModal">View

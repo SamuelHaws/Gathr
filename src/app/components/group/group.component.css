@@ -1,3 +1,7 @@
 .holder {
   height: 94vh;
 }
+
+#groupname {
+  font-size: 1.7vw;
+}
