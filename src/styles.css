@@ -2,3 +2,12 @@
 .page-component {
   height: 95vh;
 }
+
+.bc-darkgray {
+  background-color: #7a7e82;
+}
+
+.bc-gray {
+  /* background-color: #d4d4dd; */
+  /* background-color: purple !important; */
+}

@@ -6,6 +6,7 @@ import { Message } from 'src/app/models/Message';
 import { UserService } from 'src/app/services/user.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
   selector: 'app-messaging',
@@ -26,7 +27,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
   constructor(
     private messagingService: MessagingService,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private flashMessage: FlashMessagesService
   ) {}
 
   ngOnInit() {
@@ -36,7 +38,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
         .getConversations(this.username)
         .subscribe(conversations => {
           this.conversations = conversations;
-          console.log(this.conversations);
         });
     });
   }
@@ -47,20 +48,24 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   toggleAddConversation() {
     $('.add-conversation-input-group').toggle(130);
+    $('#addConversationInput').focus();
   }
 
   addConversationSubmit() {
-    console.log('add Convo');
     // ensure user exists and convo does not (yet)
     this.userService
       .getUser(this.addConversationInput)
       .pipe(take(1))
       .subscribe(user => {
         if (user === null) {
-          console.log('user is null (does not exist)');
+          this.flashMessage.show('This user does not exist!', {
+            cssClass: 'alert-danger',
+            timeout: 3500
+          });
           return;
         } else {
           let conversationId: string;
+          // convo id is user|user alphabetized
           if (this.addConversationInput < this.username)
             conversationId = this.addConversationInput + '|' + this.username;
           else conversationId = this.username + '|' + this.addConversationInput;
@@ -69,7 +74,9 @@ export class MessagingComponent implements OnInit, OnDestroy {
             .pipe(take(1))
             .subscribe(conversation => {
               if (conversation != null) {
-                console.log('conversation is not null (conversation exists)');
+                // Conversation already exists, expand
+                this.viewConversation(conversation);
+                this.addConversationInput = '';
                 return;
               } else {
                 let conversationToAdd: Conversation = {
@@ -78,6 +85,11 @@ export class MessagingComponent implements OnInit, OnDestroy {
                   participants: [this.username, this.addConversationInput]
                 };
                 this.messagingService.addConversation(conversationToAdd);
+                // timeout allows selected style in sidebar
+                setTimeout(() => {
+                  this.viewConversation(conversationToAdd);
+                }, 50);
+                this.addConversationInput = '';
               }
             });
         }
@@ -93,10 +105,24 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   viewConversation(conversation: Conversation) {
+    const otherParticipantName = this.getOtherParticipant(conversation);
+    // add styling to selected convo in sidebar
+    $('.conversation-span')
+      .toArray()
+      .forEach(conversationSpan => {
+        if (conversationSpan.textContent === otherParticipantName)
+          conversationSpan.parentElement.style.cssText =
+            'border: 3px solid #7a7e82; border-radius: 2px;';
+        else
+          conversationSpan.parentElement.style.cssText =
+            'border: 1px solid rgba(0, 0, 0, 0.125)';
+      });
     this.conversation = conversation;
     this.messages = conversation.messages;
     this.conversationSelected = true;
-    console.log(this.conversation);
+    setTimeout(function() {
+      $('#messageInput').focus();
+    }, 10);
   }
 
   messageSubmit() {
