@@ -16,13 +16,15 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 export class MessagingComponent implements OnInit, OnDestroy {
   conversations: Conversation[];
   conversation: Conversation;
+  otherParticipantToDelete: string;
   messages: Message[];
   addConversationInput: string = '';
   username: string;
   messageInput: string = '';
-  conversationSelected: boolean;
+  isConversationSelected: boolean;
 
   authSubscription: Subscription;
+  conversationSubscription: Subscription;
 
   constructor(
     private messagingService: MessagingService,
@@ -34,7 +36,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
       this.username = auth.displayName;
-      this.messagingService
+      this.conversationSubscription = this.messagingService
         .getConversations(this.username)
         .subscribe(conversations => {
           this.conversations = conversations;
@@ -44,6 +46,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.authSubscription.unsubscribe();
+    this.conversationSubscription.unsubscribe();
   }
 
   toggleAddConversation() {
@@ -98,19 +101,19 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   getOtherParticipant(conversation: Conversation): string {
     let participants = conversation.id.split('|');
-    let otherParticipantName = participants.find(participant => {
+    let otherParticipant = participants.find(participant => {
       return participant != this.username;
     });
-    return otherParticipantName;
+    return otherParticipant;
   }
 
   viewConversation(conversation: Conversation) {
-    const otherParticipantName = this.getOtherParticipant(conversation);
+    let otherParticipant = this.getOtherParticipant(conversation);
     // add styling to selected convo in sidebar
     $('.conversation-span')
       .toArray()
       .forEach(conversationSpan => {
-        if (conversationSpan.textContent === otherParticipantName)
+        if (conversationSpan.textContent === otherParticipant)
           conversationSpan.parentElement.style.cssText =
             'border: 3px solid #7a7e82; border-radius: 2px;';
         else
@@ -119,10 +122,30 @@ export class MessagingComponent implements OnInit, OnDestroy {
       });
     this.conversation = conversation;
     this.messages = conversation.messages;
-    this.conversationSelected = true;
+    this.isConversationSelected = true;
     setTimeout(function() {
       $('#messageInput').focus();
     }, 10);
+  }
+
+  expandDeleteModal(conversation: Conversation) {
+    console.log(conversation.id);
+    this.conversation = conversation;
+    this.otherParticipantToDelete = this.getOtherParticipant(conversation);
+    setTimeout(function() {
+      $('#deleteConversationModal').modal('toggle');
+    }, 10);
+  }
+
+  deleteConversation() {
+    // Ensure we delete the right conversation
+    if (
+      this.getOtherParticipant(this.conversation) ===
+      this.otherParticipantToDelete
+    ) {
+      this.messagingService.deleteConversation(this.conversation);
+      this.isConversationSelected = false;
+    }
   }
 
   messageSubmit() {

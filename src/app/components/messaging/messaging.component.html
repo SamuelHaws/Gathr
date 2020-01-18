@@ -1,5 +1,5 @@
 <div class="row m-0 page-component">
-  <div class="col-md-3 pr-0 bc-darkgray">
+  <div class="col-md-3 p-0 bc-darkgray">
     <div class="bg-dark">
       <div class="d-flex justify-content-around align-items-center py-2" style="width: 100%">
         <h4 class="text-white my-0">Conversations</h4>
@@ -20,13 +20,18 @@
       <ng-container *ngFor="let conversation of conversations">
         <li class="list-group-item d-flex justify-content-between align-items-center bc-gray">
           <span class="conversation-span">{{getOtherParticipant(conversation)}}</span>
-          <button type="button" class="root-btn btn btn-primary ml-3"
-            (click)="viewConversation(conversation)">View</button></li>
+          <div class="d-flex align-items-end">
+            <button type="button" class="root-btn btn btn-primary ml-2" (click)="viewConversation(conversation)"><i
+                class="fas fa-comments"></i></button>
+            <button type="button" class="root-btn btn btn-danger ml-2" (click)="expandDeleteModal(conversation)"><i
+                class="fas fa-times"></i></button>
+          </div>
+        </li>
       </ng-container>
     </ul>
   </div>
   <div class="col-md-9" style="max-height: 100%;">
-    <div *ngIf="conversationSelected; else defaultConversationView" style="height: 100%;">
+    <div *ngIf="isConversationSelected; else defaultConversationView" style="height: 100%;">
       <as-split direction="vertical" disabled gutterSize=0 unit="percent" class="pt-2">
         <as-split-area id="messagearea" size="90" style="border: 2px solid lightgray;" #messagearea
           [scrollTop]="messagearea.scrollHeight">
@@ -51,5 +56,26 @@
     <ng-template #defaultConversationView>
       <h2 class="m-4">Add or select a conversation on the left!</h2>
     </ng-template>
+  </div>
+  <!-- Delete Conversation Modal -->
+  <div id="deleteConversationModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Are you sure you want to delete this conversation?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{otherParticipantToDelete}}
+        </div>
+        <div class="modal-footer d-flex justify-content-around">
+          <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="deleteConversation()">Yes,
+            delete.</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

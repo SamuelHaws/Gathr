@@ -66,6 +66,10 @@ export class MessagingService {
     this.conversationCollection.doc(conversation.id).update(conversation);
   }
 
+  deleteConversation(conversation: Conversation) {
+    this.conversationCollection.doc(conversation.id).delete();
+  }
+
   addMessage(
     messageText: string,
     conversation: Conversation,
