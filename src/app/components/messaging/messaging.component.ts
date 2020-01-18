@@ -123,7 +123,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     this.conversation = conversation;
     this.messages = conversation.messages;
     this.isConversationSelected = true;
-    setTimeout(function() {
+    setTimeout(() => {
       $('#messageInput').focus();
     }, 10);
   }
@@ -132,7 +132,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     console.log(conversation.id);
     this.conversation = conversation;
     this.otherParticipantToDelete = this.getOtherParticipant(conversation);
-    setTimeout(function() {
+    setTimeout(() => {
       $('#deleteConversationModal').modal('toggle');
     }, 10);
   }

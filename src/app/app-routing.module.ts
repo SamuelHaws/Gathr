@@ -19,7 +19,7 @@ import { MessagingComponent } from './components/messaging/messaging.component';
 
 const routes: Routes = [
   // TODO: Remove authguard for dashboard, just show aggregate feed of all groups
-  { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: '', component: DashboardComponent },
   {
     path: 'add-group',
     component: AddGroupComponent,

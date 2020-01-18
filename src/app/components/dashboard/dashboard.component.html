@@ -1,16 +1,7 @@
-<table class="table table-striped">
-  <thead class="thead-inverse">
-    <tr>
-      <th>ID</th>
-      <th>Username</th>
-      <th>Email</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of users">
-      <td>{{user.id}}</td>
-      <td>{{user.username}}</td>
-      <td>{{user.email}}</td>
-    </tr>
-  </tbody>
-</table>
+<div *ngIf="isLoggedIn; else noAuth">
+  <app-my-groups></app-my-groups>
+</div>
+
+<ng-template #noAuth>
+  <app-find-groups></app-find-groups>
+</ng-template>
