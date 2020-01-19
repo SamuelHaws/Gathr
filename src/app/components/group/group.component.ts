@@ -15,6 +15,7 @@ import * as bootstrap from 'bootstrap';
 import { User } from 'src/app/models/User';
 import { UserService } from 'src/app/services/user.service';
 import { Vote } from 'src/app/models/Vote';
+import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
   selector: 'app-group',
@@ -54,6 +55,10 @@ export class GroupComponent implements OnInit, OnDestroy {
   upvoteToggled: boolean;
   downvoteToggled: boolean;
 
+  voteTimeout: boolean;
+  chatTimeout: boolean;
+  chatsJustSentCount: number = 0;
+
   groupSubscription: Subscription;
   chatSubscription: Subscription;
   memberSubscription: Subscription;
@@ -67,6 +72,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     private postService: PostService,
     private authService: AuthService,
     private userService: UserService,
+    private flashMessage: FlashMessagesService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -189,8 +195,29 @@ export class GroupComponent implements OnInit, OnDestroy {
 
   chatSubmit() {
     if (this.isLoggedIn) {
+      if (this.chatTimeout) {
+        // display alert here
+        this.flashMessage.show(
+          'You are doing that too much. Please wait a few seconds...',
+          {
+            cssClass: 'alert-danger',
+            timeout: 3000
+          }
+        );
+        return;
+      }
       this.groupService.addChat(this.chatInput, this.username);
       this.chatInput = '';
+      this.chatsJustSentCount++;
+      if (this.chatsJustSentCount >= 5) {
+        this.chatTimeout = true;
+        setTimeout(() => {
+          this.chatTimeout = false;
+        }, 3000);
+      }
+      setTimeout(() => {
+        this.chatsJustSentCount--;
+      }, 7000);
     }
   }
 
@@ -231,6 +258,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   upvoteClick(post) {
+    if (this.voteTimeout) return;
     let incrementUpvote: boolean;
     let decrementUpvote: boolean;
     let decrementDownvote: boolean;
@@ -278,6 +306,12 @@ export class GroupComponent implements OnInit, OnDestroy {
     }
     post.upvoteToggled = !post.upvoteToggled;
 
+    // set timeout
+    this.voteTimeout = true;
+    setTimeout(() => {
+      this.voteTimeout = false;
+    }, 250);
+
     let postToUpdate: Post;
     this.postService
       .getPost(post.id)
@@ -294,6 +328,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   downvoteClick(post) {
+    if (this.voteTimeout) return;
     let decrementUpvote: boolean;
     let incrementDownvote: boolean;
     let decrementDownvote: boolean;
@@ -340,6 +375,12 @@ export class GroupComponent implements OnInit, OnDestroy {
       decrementDownvote = true;
     }
     post.downvoteToggled = !post.downvoteToggled;
+
+    // set timeout
+    this.voteTimeout = true;
+    setTimeout(() => {
+      this.voteTimeout = false;
+    }, 250);
 
     let postToUpdate: Post;
     this.postService

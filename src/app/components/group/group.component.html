@@ -38,7 +38,10 @@
                           <h5 class="card-title mb-0">{{post.title}} </h5>
                         </a><a *ngIf="post.isTextPost" href="{{post.link}}">
                           <h5 class="card-title mb-0">{{post.title}} </h5>
-                        </a><i *ngIf="post.isTextPost" class="ml-1 fas fa-file-alt" style="color: gray;"></i>
+                        </a>
+                        <i *ngIf="post.isTextPost" class="ml-1 fas fa-file-alt" style="color: gray;"></i>
+                        <i *ngIf="!post.isTextPost" class="ml-1 fas fa-external-link-square-alt"
+                          style="color: gray;"></i>
                       </div>
                       <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
                     </div>
@@ -78,10 +81,10 @@
     </div>
   </div>
   <!-- Column for sidebar/group info -->
-  <div class="col-md-2 text-center d-flex flex-column align-items-center" style="background-color: #d4d4dd">
-    <h3 class="mt-4" id="groupname">{{group.groupname}}</h3>
-    <span class="mt-4">{{group.description}}</span>
-    <div class="mt-1">
+  <div class="col-md-2 text-center d-flex flex-column align-items-center bg-dark">
+    <h3 class="mt-3 text-white" id="groupname">{{group.groupname}}</h3>
+    <span class="mt-3 text-white">{{group.description}}</span>
+    <div class="mt-3">
       <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#rosterModal">View
         Roster</button>
       <button *ngIf="!member && username" type="button" class="btn btn-primary" (click)="joinGroup()">Join</button>

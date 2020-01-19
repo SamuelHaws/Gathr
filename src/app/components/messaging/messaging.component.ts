@@ -23,6 +23,9 @@ export class MessagingComponent implements OnInit, OnDestroy {
   messageInput: string = '';
   isConversationSelected: boolean;
 
+  messagesJustSentCount: number = 0;
+  messageTimeout: boolean;
+
   authSubscription: Subscription;
   conversationSubscription: Subscription;
 
@@ -149,11 +152,32 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   messageSubmit() {
+    if (this.messageTimeout) {
+      // display alert here
+      this.flashMessage.show(
+        'You are doing that too much. Please wait a few seconds...',
+        {
+          cssClass: 'alert-danger',
+          timeout: 3000
+        }
+      );
+      return;
+    }
     this.messagingService.addMessage(
       this.messageInput,
       this.conversation,
       this.username
     );
     this.messageInput = '';
+    this.messagesJustSentCount++;
+    if (this.messagesJustSentCount >= 5) {
+      this.messageTimeout = true;
+      setTimeout(() => {
+        this.messageTimeout = false;
+      }, 3000);
+    }
+    setTimeout(() => {
+      this.messagesJustSentCount--;
+    }, 3000);
   }
 }
