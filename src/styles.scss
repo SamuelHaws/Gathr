@@ -1,0 +1,28 @@
+// customize bootstrap
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import 'customize-bootstrap.scss';
+
+@import '../node_modules/bootstrap/scss/bootstrap';
+
+// other styles
+html,
+body {
+  background-color: #ededed;
+}
+
+.page-component {
+  height: 95vh;
+}
+
+.bc-darkgray {
+  background-color: #7a7e82;
+}
+
+.bc-gray {
+  /* background-color: #d4d4dd; */
+}
+
+.dropdown-item:active {
+  background-color: #7a7e82;
+}
