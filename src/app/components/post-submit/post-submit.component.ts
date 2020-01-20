@@ -86,7 +86,11 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
         });
       // Add the post to db
       this.postService.addPost(this.post);
-      this.postService.postToAdd = {};
+      this.postService.postToAdd = {
+        title: '',
+        body: '',
+        link: ''
+      };
       // Create feeds
       this.flashMessage.show('New post added!', {
         cssClass: 'alert-success',
