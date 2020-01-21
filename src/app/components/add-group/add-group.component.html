@@ -1,13 +1,4 @@
-<div class="row">
-  <div class="col-md-6 my-2">
-    <a routerLink="/" class="btn btn-link">
-      <i class="fa fa-arrow-circle-left"></i> Back to Dashboard
-    </a>
-  </div>
-  <div class="col-md-6"></div>
-</div>
-
-<div class="card">
+<div class="card mt-4">
   <div class="card-header">
     Add Group
   </div>
@@ -15,6 +6,8 @@
     <form #groupForm="ngForm" (ngSubmit)="onSubmit(groupForm)">
       <div class="form-group">
         <label for="groupname">Group Name</label>
+        <i class="fa fa-question-circle ml-1" data-toggle="tooltip" data-placement="right" data-html="true"
+          title={{criteriaStr}}></i>
         <input type="text" class="form-control" name="groupname" #groupname="ngModel" [(ngModel)]="group.groupname"
           required>
       </div>

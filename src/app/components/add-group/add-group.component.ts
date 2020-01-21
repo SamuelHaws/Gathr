@@ -23,6 +23,9 @@ export class AddGroupComponent implements OnInit, OnDestroy {
 
   authSubscription: Subscription;
 
+  criteriaStr =
+    '- Allowed characters: letters, digits, underscores<br/>- No beginning, ending, or adjacent underscores<br/>- Length of 3-20 characters';
+
   @ViewChild('groupForm', { static: false }) form: any;
 
   constructor(
@@ -40,6 +43,9 @@ export class AddGroupComponent implements OnInit, OnDestroy {
         console.error('NO AUTH ON ADDGROUP');
       }
     });
+    $(document).ready(function() {
+      $('body').tooltip({ selector: '[data-toggle=tooltip]' });
+    });
   }
 
   ngOnDestroy() {
@@ -48,6 +54,14 @@ export class AddGroupComponent implements OnInit, OnDestroy {
 
   // TODO: form validation
   onSubmit({ value, valid }: { value: Group; valid: boolean }) {
+    const criteria = new RegExp('^(?!_)(?!.*_$)(?!.*?__)[a-zA-Z0-9_]{3,20}$');
+    if (!criteria.test(value.groupname)) {
+      this.flashMessage.show('Please enter a valid Group name.', {
+        cssClass: 'alert-danger',
+        timeout: 3500
+      });
+      return;
+    }
     if (!valid) {
       this.flashMessage.show('Form values invalid', {
         cssClass: 'alert-danger',
@@ -59,24 +73,28 @@ export class AddGroupComponent implements OnInit, OnDestroy {
       this.group.description = value.description;
       // this.group.public = value.public;
       // Add the group to db
-      this.groupService.addGroup(this.group).pipe(take(1)).subscribe(added => {
-        if (added) {
-          // Owner automatically joins
-          this.groupService.joinGroup(this.group.groupname, this.group.owner);
-          this.flashMessage.show('New group added!', {
-            cssClass: 'alert-success',
-            timeout: 3500
-          });
-          this.router.navigate(['/']);
-        }
-        else {
-          this.flashMessage.show(`Group "${this.group.groupname}" already exists.`, {
-            cssClass: 'alert-danger',
-            timeout: 3500
-          });
-        }
-      });
-      
+      this.groupService
+        .addGroup(this.group)
+        .pipe(take(1))
+        .subscribe(added => {
+          if (added) {
+            // Owner automatically joins
+            this.groupService.joinGroup(this.group.groupname, this.group.owner);
+            this.flashMessage.show('New group added!', {
+              cssClass: 'alert-success',
+              timeout: 3500
+            });
+            this.router.navigate([`/g/${this.group.groupname}`]);
+          } else {
+            this.flashMessage.show(
+              `Group "${this.group.groupname}" already exists.`,
+              {
+                cssClass: 'alert-danger',
+                timeout: 3500
+              }
+            );
+          }
+        });
     }
   }
 }

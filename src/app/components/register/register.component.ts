@@ -9,9 +9,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: "app-register",
-  templateUrl: "./register.component.html",
-  styleUrls: ["./register.component.css"]
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   email: string;
@@ -19,8 +19,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   username: string;
   uid: string;
   user: User = {
-    username: "",
-    email: "",
+    username: '',
+    email: '',
     usersettings: {},
     invites: [],
     votes: []
@@ -28,6 +28,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private auth;
 
   authSubscription: Subscription;
+
+  criteriaStr =
+    '- Allowed characters: letters, digits, underscores<br/>- No beginning, ending, or adjacent underscores<br/>- Length of 3-20 characters';
 
   constructor(
     private router: Router,
@@ -39,9 +42,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
       if (auth) {
-        this.router.navigate(["/"]);
+        this.router.navigate(['/']);
       }
       this.auth = auth;
+    });
+    $(document).ready(function() {
+      $('body').tooltip({ selector: '[data-toggle=tooltip]' });
     });
   }
 
@@ -49,17 +55,35 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authSubscription.unsubscribe();
   }
 
-  // TODO: Check for dupe displayname/username???
   onSubmit() {
+    // check username fits criteria
+    /* 
+     Criteria: 
+     letters, digits, underscores
+     no beginning, ending, or adjacent underscores 
+     length 3 - 20 characters
+    */
+    const criteria = new RegExp('^(?!_)(?!.*_$)(?!.*?__)[a-zA-Z0-9_]{3,20}$');
+    if (!criteria.test(this.username)) {
+      this.flashMessage.show('Please enter a valid username.', {
+        cssClass: 'alert-danger',
+        timeout: 3500
+      });
+      return;
+    }
+    // check if user already exists, else register
     this.userService
       .userExists(this.username)
       .pipe(take(1))
       .subscribe(exists => {
         if (exists) {
-          this.flashMessage.show('The username is already in use by another account.', {
-            cssClass: "alert-danger",
-            timeout: 3500
-          });
+          this.flashMessage.show(
+            'The username is already in use by another account.',
+            {
+              cssClass: 'alert-danger',
+              timeout: 3500
+            }
+          );
         } else {
           this.authService
             .register(this.username, this.email, this.password)
@@ -69,18 +93,18 @@ export class RegisterComponent implements OnInit, OnDestroy {
                 this.user.email = this.email;
                 this.user.username = this.username;
                 this.userService.addUser(this.user);
-                this.flashMessage.show("You are now registered!", {
-                  cssClass: "alert-success",
+                this.flashMessage.show('You are now registered!', {
+                  cssClass: 'alert-success',
                   timeout: 3500
                 });
-                this.router.navigate(["/"]);
+                this.router.navigate(['/']);
               } else {
-                console.error("NO AUTH ON REGISTER");
+                console.error('NO AUTH ON REGISTER');
               }
             })
             .catch(err => {
               this.flashMessage.show(err.message, {
-                cssClass: "alert-danger",
+                cssClass: 'alert-danger',
                 timeout: 3500
               });
             });
