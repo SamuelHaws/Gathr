@@ -1,0 +1,13 @@
+.navbar-brand img {
+  height: 5.5vh;
+  /* put value of image height as your need */
+  /* float: left; */
+}
+
+.navbar {
+  height: 6vh;
+}
+
+.navbar-brand {
+  padding: 0;
+}
