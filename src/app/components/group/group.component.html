@@ -1,12 +1,12 @@
-<div class="row" style="margin: auto;">
+<div class="row">
   <!-- Column for posts/chat -->
   <div class="col-md-10">
     <div class="page-component">
-      <as-split unit="percent" [direction]="direction" (dragEnd)="dragEnd('percent', $event)" #split="asSplit"
-        style="height: 100%">
-        <as-split-area size="60" #area1="asSplitArea" style="padding-right: 15px" class="pt-2">
+      <as-split id="root-as-split" unit="percent" [direction]="direction" (dragEnd)="dragEnd('percent', $event)"
+        #split="asSplit">
+        <as-split-area id="root-post-split-area" size="60" #area1="asSplitArea" class="pt-2">
           <div id="post-bar" class="d-flex py-2 justify-content-around align-items-center">
-            <div id="post-sort" class="d-flex justify-content-around" style="width: 50%;">
+            <div id="post-sort" class="d-flex justify-content-around">
               <h6>Sort by: </h6>
               <div class="radio">
                 <label><input type="radio" id="topradio" name="sortradio" (click)="sortByTop()" checked> Top</label>
@@ -39,9 +39,8 @@
                         </a><a *ngIf="post.isTextPost" href="{{post.link}}">
                           <h5 class="card-title mb-0">{{post.title}} </h5>
                         </a>
-                        <i *ngIf="post.isTextPost" class="ml-1 fas fa-file-alt" style="color: gray;"></i>
-                        <i *ngIf="!post.isTextPost" class="ml-1 fas fa-external-link-square-alt"
-                          style="color: gray;"></i>
+                        <i *ngIf="post.isTextPost" class="ml-1 fas fa-file-alt"></i>
+                        <i *ngIf="!post.isTextPost" class="ml-1 fas fa-external-link-square-alt"></i>
                       </div>
                       <p class="card-text">by: <a routerLink>{{post.owner}}</a></p>
                     </div>
@@ -57,8 +56,7 @@
         </as-split-area>
         <as-split-area size="40" #area2="asSplitArea" class="px-4">
           <as-split direction="vertical" disabled gutterSize=0 unit="percent" class="pt-2">
-            <as-split-area id="chatarea" size="90" style="border: 2px solid lightgray;" #chatarea
-              [scrollTop]="chatarea.scrollHeight">
+            <as-split-area id="chatarea" size="90" #chatarea [scrollTop]="chatarea.scrollHeight">
 
               <div id="chatfeed" class="mb-auto p-1">
                 <ng-container *ngFor="let chat of chats">

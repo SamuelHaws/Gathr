@@ -1,7 +1,28 @@
+.row {
+  margin: auto;
+}
+
 #groupname {
   font-size: 1.7vw;
 }
 
 #chatarea {
   background-color: #fff;
+  border: 2px solid lightgray;
+}
+
+#root-as-split {
+  height: 100%;
+}
+
+#root-post-split-area {
+  padding-right: 15px;
+}
+
+#post-sort {
+  width: 50%;
+}
+
+.fas {
+  color: gray;
 }

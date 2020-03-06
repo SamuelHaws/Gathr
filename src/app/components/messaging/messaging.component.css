@@ -1,3 +1,19 @@
 #messagearea {
   background-color: #fff;
 }
+
+#add-convo-extend-btn {
+  padding: 4px 8px;
+}
+
+.col-md-9 {
+  max-height: 100%;
+}
+
+#convo-space {
+  height: 100%;
+}
+
+#messagearea {
+  border: 2px solid lightgray;
+}

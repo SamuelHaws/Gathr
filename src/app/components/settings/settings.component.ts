@@ -81,6 +81,7 @@ export class SettingsComponent implements OnInit {
 
         this.user.email = this.emailText;
         this.userService.updateUser(this.user);
+        this.emailText = '';
       })
       .catch(e => {
         this.flashMessage.show('Change failed for reason: ' + e.message, {

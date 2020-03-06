@@ -3,3 +3,23 @@
   padding-right: 2vw;
   content: ' ';
 }
+
+.spacing {
+  margin-top: 30px;
+}
+
+.root-comment-form-card {
+  display: none;
+}
+
+.flex-column {
+  width: 100%;
+}
+
+.btn-small {
+  padding: 3px;
+}
+
+.comment-comment-form-card {
+  display: none;
+}

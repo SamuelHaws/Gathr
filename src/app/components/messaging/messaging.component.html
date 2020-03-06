@@ -1,9 +1,9 @@
 <div class="row m-0 page-component">
   <div class="col-md-3 p-0 bc-darkgray">
     <div class="bg-dark">
-      <div class="d-flex justify-content-around align-items-center py-2" style="width: 100%">
+      <div class="d-flex justify-content-around align-items-center py-2">
         <h4 class="text-white my-0">Conversations</h4>
-        <button type="button" class="btn btn-light" style="padding: 4px 8px" (click)="toggleAddConversation()"><i
+        <button id="add-convo-extend-btn" type="button" class="btn btn-light" (click)="toggleAddConversation()"><i
             class="fas fa-plus"></i></button>
       </div>
       <div class="add-conversation-input-group input-group mb-2 px-2 pb-2" style="display: none;">
@@ -30,11 +30,10 @@
       </ng-container>
     </ul>
   </div>
-  <div class="col-md-9" style="max-height: 100%;">
-    <div *ngIf="isConversationSelected; else defaultConversationView" style="height: 100%;">
+  <div class="col-md-9">
+    <div id="convo-space" *ngIf="isConversationSelected; else defaultConversationView">
       <as-split direction="vertical" disabled gutterSize=0 unit="percent" class="pt-2">
-        <as-split-area id="messagearea" size="90" style="border: 2px solid lightgray;" #messagearea
-          [scrollTop]="messagearea.scrollHeight">
+        <as-split-area id="messagearea" size="90" #messagearea [scrollTop]="messagearea.scrollHeight">
 
           <div id="messagefeed" class="mb-auto p-1">
             <ng-container *ngFor="let message of messages">
