@@ -78,6 +78,9 @@ export class SettingsComponent implements OnInit {
           cssClass: 'alert-success',
           timeout: 3500
         });
+
+        this.user.email = this.emailText;
+        this.userService.updateUser(this.user);
       })
       .catch(e => {
         this.flashMessage.show('Change failed for reason: ' + e.message, {
