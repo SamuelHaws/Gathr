@@ -4,6 +4,7 @@ import { UserService } from 'src/app/services/user.service';
 import { GroupService } from 'src/app/services/group.service';
 import { User } from 'src/app/models/User';
 import { take } from 'rxjs/operators';
+import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
   selector: 'app-settings',
@@ -14,11 +15,13 @@ export class SettingsComponent implements OnInit {
   username: string;
   user: User;
   invites: string[]; //groupnames
+  emailText: string = '';
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private flashMessage: FlashMessagesService
   ) {}
 
   ngOnInit() {
@@ -57,5 +60,30 @@ export class SettingsComponent implements OnInit {
     });
     this.user.invites = this.invites;
     this.userService.updateUser(this.user);
+  }
+
+  submitReset() {
+    if (this.emailText.length === 0) {
+      this.flashMessage.show('Please enter a new email.', {
+        cssClass: 'alert-danger',
+        timeout: 3500
+      });
+      return;
+    }
+
+    this.authService
+      .updateUserEmail(this.emailText)
+      .then(() => {
+        this.flashMessage.show('Email successfully changed!', {
+          cssClass: 'alert-success',
+          timeout: 3500
+        });
+      })
+      .catch(e => {
+        this.flashMessage.show('Change failed for reason: ' + e.message, {
+          cssClass: 'alert-danger',
+          timeout: 4500
+        });
+      });
   }
 }

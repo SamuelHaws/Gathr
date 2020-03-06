@@ -1,7 +1,12 @@
 <div class="row mt-2">
   <div class="col-md-9">
     <h3>Settings</h3>
-    <p>Settings will be here</p>
+    <h6 id="new-email-text">Change your email address:</h6>
+    <div class="d-flex">
+      <input type="email" name="new-email-input" id="new-email-input" class="form-control" [(ngModel)]="emailText"
+        placeholder="Enter your new email...">
+      <button class="btn btn-primary" type="button" (click)="submitReset()">Reset</button>
+    </div>
   </div>
   <div class="col-md-3 text-center">
     <h3>Invites</h3>
