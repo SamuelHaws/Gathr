@@ -10,8 +10,6 @@ import { PostService } from 'src/app/services/post.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Member } from 'src/app/models/Member';
-
-import * as bootstrap from 'bootstrap';
 import { User } from 'src/app/models/User';
 import { UserService } from 'src/app/services/user.service';
 import { Vote } from 'src/app/models/Vote';
