@@ -4,8 +4,8 @@ import {
   AngularFirestoreDocument,
   AngularFirestore
 } from 'angularfire2/firestore';
-import { Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Group } from '../models/Group';
 import { Chat } from '../models/Chat';
@@ -19,15 +19,15 @@ export class GroupService {
   groupsCollection: AngularFirestoreCollection<Group>;
   publicGroupsCollection: AngularFirestoreCollection<Group>;
   groupDoc: AngularFirestoreDocument<Group>;
-  groups: Observable<Group[]>;
-  publicGroups: Observable<Group[]>;
-  group: Observable<Group>;
-  chats: Observable<Chat[]>;
+  groups$: Observable<Group[]>;
+  publicGroups$: Observable<Group[]>;
+  group$: Observable<Group>;
+  chats$: Observable<Chat[]>;
   membersCollection: AngularFirestoreCollection<Member>;
   memberDoc: AngularFirestoreDocument<Member>;
-  members: Observable<Member[]>;
-  memberNames: Observable<string[]>;
-  member: Observable<Member>;
+  members$: Observable<Member[]>;
+  memberNames$: Observable<string[]>;
+  member$: Observable<Member>;
   memberObj: Member = {
     id: '',
     group: '',
@@ -45,23 +45,26 @@ export class GroupService {
     this.membersCollection = this.afs.collection('members');
   }
 
-  // returns a boolean observable which indicates whether or not a group was 
+  // returns a boolean observable which indicates whether or not a group was
   // added, based on whether or not group with groupname already exists
   addGroup(group: Group): Observable<boolean> {
-    return this.groupsCollection.doc(group.groupname).snapshotChanges().pipe(
-      map(action => {
-        if (action.payload.exists === false) {
-          this.groupsCollection.doc(group.groupname).set(group);
-          return true;
-        } else {
-          return false;
-        }
-      })
-    );
+    return this.groupsCollection
+      .doc(group.groupname)
+      .snapshotChanges()
+      .pipe(
+        map(action => {
+          if (action.payload.exists === false) {
+            this.groupsCollection.doc(group.groupname).set(group);
+            return true;
+          } else {
+            return false;
+          }
+        })
+      );
   }
 
   getGroups(): Observable<Group[]> {
-    this.groups = this.groupsCollection.snapshotChanges().pipe(
+    this.groups$ = this.groupsCollection.snapshotChanges().pipe(
       map(changes => {
         return changes.map(action => {
           const data = action.payload.doc.data() as Group;
@@ -70,11 +73,11 @@ export class GroupService {
         });
       })
     );
-    return this.groups;
+    return this.groups$;
   }
 
   getPublicGroups(): Observable<Group[]> {
-    this.publicGroups = this.publicGroupsCollection.snapshotChanges().pipe(
+    this.publicGroups$ = this.publicGroupsCollection.snapshotChanges().pipe(
       map(changes => {
         return changes.map(action => {
           const data = action.payload.doc.data() as Group;
@@ -83,12 +86,12 @@ export class GroupService {
         });
       })
     );
-    return this.publicGroups;
+    return this.publicGroups$;
   }
 
   getGroup(groupname: string): Observable<Group> {
     this.groupDoc = this.afs.doc<Group>(`groups/${groupname}`);
-    this.group = this.groupDoc.snapshotChanges().pipe(
+    this.group$ = this.groupDoc.snapshotChanges().pipe(
       map(action => {
         if (action.payload.exists === false) {
           return null;
@@ -99,11 +102,11 @@ export class GroupService {
         }
       })
     );
-    return this.group;
+    return this.group$;
   }
 
   getChats(): Observable<Chat[]> {
-    this.chats = this.groupDoc
+    this.chats$ = this.groupDoc
       .collection(`/chats`, ref => ref.orderBy('createdAt'))
       .snapshotChanges()
       .pipe(
@@ -117,7 +120,7 @@ export class GroupService {
           });
         })
       );
-    return this.chats;
+    return this.chats$;
   }
 
   addChat(chatMessage: string, username: string) {
@@ -150,7 +153,7 @@ export class GroupService {
       `members/${groupname + '|' + username}`
     );
 
-    this.member = this.memberDoc.snapshotChanges().pipe(
+    this.member$ = this.memberDoc.snapshotChanges().pipe(
       map(action => {
         if (action.payload.exists === false) {
           return null;
@@ -161,11 +164,11 @@ export class GroupService {
         }
       })
     );
-    return this.member;
+    return this.member$;
   }
 
   getRoster(groupname: string): Observable<string[]> {
-    this.memberNames = this.afs
+    this.memberNames$ = this.afs
       .collection('members', ref => ref.where('group', '==', groupname))
       .snapshotChanges()
       .pipe(
@@ -176,6 +179,6 @@ export class GroupService {
           });
         })
       );
-    return this.memberNames;
+    return this.memberNames$;
   }
 }

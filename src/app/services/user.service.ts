@@ -15,9 +15,9 @@ import { Member } from '../models/Member';
 export class UserService {
   usersCollection: AngularFirestoreCollection<User>;
   userDoc: AngularFirestoreDocument<User>;
-  users: Observable<User[]>;
-  user: Observable<User>;
-  memberGroupnames: Observable<string[]>;
+  users$: Observable<User[]>;
+  user$: Observable<User>;
+  memberGroupnames$: Observable<string[]>;
 
   constructor(private afs: AngularFirestore) {
     this.usersCollection = this.afs.collection('users', ref =>
@@ -32,7 +32,7 @@ export class UserService {
   }
 
   getUsers(): Observable<User[]> {
-    this.users = this.usersCollection.snapshotChanges().pipe(
+    this.users$ = this.usersCollection.snapshotChanges().pipe(
       map(changes => {
         return changes.map(action => {
           const data = action.payload.doc.data() as User;
@@ -41,13 +41,13 @@ export class UserService {
         });
       })
     );
-    return this.users;
+    return this.users$;
   }
 
   getUser(username: string): Observable<User> {
     this.userDoc = this.afs.doc<User>(`users/${username}`);
 
-    this.user = this.userDoc.snapshotChanges().pipe(
+    this.user$ = this.userDoc.snapshotChanges().pipe(
       map(action => {
         if (action.payload.exists === false) {
           return null;
@@ -58,11 +58,11 @@ export class UserService {
         }
       })
     );
-    return this.user;
+    return this.user$;
   }
 
   getMemberGroupnames(username: string): Observable<string[]> {
-    this.memberGroupnames = this.afs
+    this.memberGroupnames$ = this.afs
       .collection('members', ref => ref.where('user', '==', username))
       .snapshotChanges()
       .pipe(
@@ -73,7 +73,7 @@ export class UserService {
           })
         )
       );
-    return this.memberGroupnames;
+    return this.memberGroupnames$;
   }
 
   updateUser(user: User) {
@@ -98,16 +98,17 @@ export class UserService {
   }
 
   userExists(username: string): Observable<boolean> {
-    return this.usersCollection.doc(username).snapshotChanges().pipe(
-      map(action => {
-        if (action.payload.exists === false) {
-          return false;
-        } else {
-          return true;
-        }
-      })
-    );
+    return this.usersCollection
+      .doc(username)
+      .snapshotChanges()
+      .pipe(
+        map(action => {
+          if (action.payload.exists === false) {
+            return false;
+          } else {
+            return true;
+          }
+        })
+      );
   }
-
-  // TODO: Implement user delete
 }

@@ -19,7 +19,7 @@ export class PostService {
   postDoc: AngularFirestoreDocument<Post>;
   post$: Observable<Post>;
   posts$: Observable<Post[]>;
-  postIds: Observable<string[]>;
+  postIds$: Observable<string[]>;
   groupIds$: Observable<string[]>;
   comments$: Observable<Comment[]>;
   feedsCollection: AngularFirestoreCollection<Feed>;
@@ -85,17 +85,21 @@ export class PostService {
     this.postDoc = this.afs.doc(`posts/${postId}`);
     this.postDoc.delete();
     // Delete relevant Feeds
-    this.afs.collection('feeds', ref => ref.where('post', '==', postId)).valueChanges().pipe(take(1)).subscribe(feeds => {
-      feeds.map((feed: Feed) => {
-        this.afs.doc(`feeds/${feed.id}`).delete();
-      })
-    })
+    this.afs
+      .collection('feeds', ref => ref.where('post', '==', postId))
+      .valueChanges()
+      .pipe(take(1))
+      .subscribe(feeds => {
+        feeds.map((feed: Feed) => {
+          this.afs.doc(`feeds/${feed.id}`).delete();
+        });
+      });
   }
 
   // Get feeds with matching groupName, then fetch corresponding
   // Posts from PostsCollection
   getPostIdsByGroupName(groupName: string): Observable<string[]> {
-    this.postIds = this.afs
+    this.postIds$ = this.afs
       .collection('feeds', ref => ref.where('group', '==', groupName))
       .snapshotChanges()
       .pipe(
@@ -106,7 +110,7 @@ export class PostService {
           });
         })
       );
-    return this.postIds;
+    return this.postIds$;
   }
 
   getGroupnamesByPostId(postId: string): Observable<string[]> {
