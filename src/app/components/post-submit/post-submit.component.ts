@@ -58,10 +58,6 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
         timeout: 3500
       });
     } else {
-      // Add validated values to this.post
-      this.post.title = value.title;
-      this.post.link = value.link;
-      this.post.body = value.body;
       // other values
       this.post.id = this.afs.createId();
       this.post.upvotes = 1;
