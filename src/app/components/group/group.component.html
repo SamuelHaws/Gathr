@@ -34,9 +34,7 @@
                     </div>
                     <div class="post-info">
                       <div class="d-flex align-items-center mb-2">
-                        <a *ngIf="!post.isTextPost" href="//{{post.link}}">
-                          <h5 class="card-title mb-0">{{post.title}} </h5>
-                        </a><a *ngIf="post.isTextPost" href="{{post.link}}">
+                        <a href="{{post.link}}">
                           <h5 class="card-title mb-0">{{post.title}} </h5>
                         </a>
                         <i *ngIf="post.isTextPost" class="ml-1 fas fa-file-alt"></i>

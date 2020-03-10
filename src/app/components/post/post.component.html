@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between">
   <div class="mb-3">
-    <h3 *ngIf="!post.isTextPost"><a href="//{{post.link}}">{{post.title}}</a></h3>
+    <h3 *ngIf="!post.isTextPost"><a href="{{post.link}}">{{post.title}}</a></h3>
     <h3 *ngIf=" post.isTextPost">{{post.title}}</h3>
     <h5>{{post.owner}}</h5>
     <p>{{post.body}}</p>
