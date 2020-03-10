@@ -69,6 +69,10 @@ export class PostSubmitComponent implements OnInit, OnDestroy {
         this.post.isTextPost = true;
         this.post.link = `/p/${this.post.id}`;
       } else {
+        if (this.post.link.slice(0, 7) === 'http://')
+          this.post.link = this.post.link.slice(7, this.post.link.length - 1);
+        else if (this.post.link.slice(0, 8) === 'https://')
+          this.post.link = this.post.link.slice(8, this.post.link.length - 1);
         this.post.isTextPost = false;
       }
       // Add vote to user
