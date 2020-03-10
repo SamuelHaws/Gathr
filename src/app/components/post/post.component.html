@@ -6,7 +6,7 @@
     <h3 *ngIf=" post.isTextPost">{{post.title}}</h3>
     <h5>{{post.owner}}</h5>
     <p>{{post.body}}</p>
-    <button type="button" class="btn btn-primary mr-2" (click)="toggleRootAdd()">Reply</button>
+    <button *ngIf="isLoggedIn" type="button" class="btn btn-primary mr-2" (click)="toggleRootAdd()">Reply</button>
     <button *ngIf="post.owner === username" type="button" class="btn btn-warning mr-2" (click)="toggleRootEditState()"
       [disabled]="post.isDisabled">Edit</button>
     <button *ngIf="post.owner === username" type="button" class="btn btn-danger" (click)="deletePost()"
@@ -37,7 +37,8 @@
     </span>
     <div class="d-flex flex-column py-2">
       <p class="card-title">{{comment.author}}
-        <button class="btn btn-primary btn-small ml-1" (click)="toggleChildAdd($event, comment)">Reply</button>
+        <button *ngIf="isLoggedIn" class="btn btn-primary btn-small ml-1"
+          (click)="toggleChildAdd($event, comment)">Reply</button>
         <button *ngIf="comment.author === username" class="btn btn-warning btn-small ml-1"
           (click)="toggleChildEditState($event, comment)" [disabled]="comment.isDisabled">Edit</button>
         <button *ngIf="comment.author === username" class="btn btn-danger btn-small ml-1"

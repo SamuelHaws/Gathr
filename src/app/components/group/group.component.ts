@@ -148,6 +148,37 @@ export class GroupComponent implements OnInit, OnDestroy {
                       });
                   });
                 });
+            } else {
+              this.postSubscription = this.postService
+                .getPostIdsByGroupName(this.route.snapshot.params['id'])
+                .pipe(take(1))
+                .subscribe(postIds => {
+                  postIds.forEach(postId => {
+                    this.postService
+                      .getPost(postId)
+                      .pipe(take(1))
+                      .subscribe(post => {
+                        this.posts.push(post);
+                        let lastPost = this.posts.find(findpost => {
+                          return findpost.id === post.id;
+                        });
+                        // after last post is added or updated, re-apply current sort
+                        if (
+                          this.posts.indexOf(lastPost) ===
+                          this.posts.length - 1
+                        ) {
+                          let selectedOption: string = $(
+                            "input[type='radio']:checked"
+                          ).attr('id');
+                          if (selectedOption === 'topradio') this.sortByTop();
+                          if (selectedOption === 'newestradio')
+                            this.sortByNewest();
+                          if (selectedOption === 'oldestradio')
+                            this.sortByOldest();
+                        }
+                      });
+                  });
+                });
             }
           });
 
@@ -259,7 +290,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   upvoteClick(post) {
-    if (this.voteTimeout) return;
+    if (this.voteTimeout || !this.isLoggedIn) return;
     let incrementUpvote: boolean;
     let decrementUpvote: boolean;
     let decrementDownvote: boolean;
@@ -329,7 +360,7 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   downvoteClick(post) {
-    if (this.voteTimeout) return;
+    if (this.voteTimeout || !this.isLoggedIn) return;
     let decrementUpvote: boolean;
     let incrementDownvote: boolean;
     let decrementDownvote: boolean;
@@ -437,18 +468,20 @@ export class GroupComponent implements OnInit, OnDestroy {
               }
 
               // Get current user, fetch existing upvotes/downvotes
-              this.userService
-                .getUser(this.username)
-                .pipe(take(1))
-                .subscribe(user => {
-                  user.votes.forEach(vote => {
-                    if (vote.post === post.id) {
-                      if (vote.voteDirection === 1) post.upvoteToggled = true;
-                      else if (vote.voteDirection === 0)
-                        post.downvoteToggled = true;
-                    }
+              if (this.isLoggedIn) {
+                this.userService
+                  .getUser(this.username)
+                  .pipe(take(1))
+                  .subscribe(user => {
+                    user.votes.forEach(vote => {
+                      if (vote.post === post.id) {
+                        if (vote.voteDirection === 1) post.upvoteToggled = true;
+                        else if (vote.voteDirection === 0)
+                          post.downvoteToggled = true;
+                      }
+                    });
                   });
-                });
+              }
             });
         });
       });

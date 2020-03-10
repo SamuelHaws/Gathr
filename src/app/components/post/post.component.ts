@@ -29,6 +29,7 @@ export class PostComponent implements OnInit, OnDestroy {
   isMember: boolean;
   rootEditState: boolean;
   childEditState: boolean;
+  isLoggedIn: boolean;
 
   constructor(
     private postService: PostService,
@@ -51,7 +52,10 @@ export class PostComponent implements OnInit, OnDestroy {
       .getAuth()
       .pipe(take(1))
       .subscribe(auth => {
-        this.username = auth.displayName;
+        if (auth) {
+          this.username = auth.displayName;
+          this.isLoggedIn = true;
+        }
       });
     // Get groups that are either public, or user is a member of
     this.postService
