@@ -168,7 +168,10 @@ export class GroupComponent implements OnInit, OnDestroy {
 
     // load chats for group
     this.chatSubscription = this.groupService.getChats().subscribe(chats => {
-      this.chats = chats;
+      this.chats = chats.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
     });
 
     // load users for invite search
