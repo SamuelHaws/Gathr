@@ -15,9 +15,10 @@ import { FlashMessagesService } from 'angular2-flash-messages';
 })
 export class MessagingComponent implements OnInit, OnDestroy {
   conversations: Conversation[];
-  conversation: Conversation;
+  conversation: Conversation = {
+    messages: []
+  };
   otherParticipantToDelete: string;
-  messages: Message[];
   addConversationInput: string = '';
   username: string;
   messageInput: string = '';
@@ -27,6 +28,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   messageTimeout: boolean;
 
   authSubscription: Subscription;
+  conversationsSubscription: Subscription;
   conversationSubscription: Subscription;
 
   constructor(
@@ -39,7 +41,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.authSubscription = this.authService.getAuth().subscribe(auth => {
       this.username = auth.displayName;
-      this.conversationSubscription = this.messagingService
+      this.conversationsSubscription = this.messagingService
         .getConversations(this.username)
         .subscribe(conversations => {
           this.conversations = conversations;
@@ -50,6 +52,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.authSubscription.unsubscribe();
     this.conversationSubscription.unsubscribe();
+    this.conversationsSubscription.unsubscribe();
   }
 
   toggleAddConversation() {
@@ -123,8 +126,11 @@ export class MessagingComponent implements OnInit, OnDestroy {
           conversationSpan.parentElement.style.cssText =
             'border: 1px solid rgba(0, 0, 0, 0.125)';
       });
-    this.conversation = conversation;
-    this.messages = conversation.messages;
+    this.conversationSubscription = this.messagingService
+      .getConversation(conversation.id)
+      .subscribe(conversation => {
+        this.conversation = conversation;
+      });
     this.isConversationSelected = true;
     setTimeout(() => {
       $('#messageInput').focus();
@@ -132,7 +138,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   expandDeleteModal(conversation: Conversation) {
-    console.log(conversation.id);
     this.conversation = conversation;
     this.otherParticipantToDelete = this.getOtherParticipant(conversation);
     setTimeout(() => {

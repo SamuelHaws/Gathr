@@ -23,7 +23,6 @@ export class MessagingService {
   }
 
   getConversations(username: string): Observable<Conversation[]> {
-    console.log(username);
     this.conversations$ = this.afs
       .collection('conversations', ref =>
         ref.where('participants', 'array-contains', username)

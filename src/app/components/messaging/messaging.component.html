@@ -36,7 +36,7 @@
         <as-split-area id="messagearea" size="90" #messagearea [scrollTop]="messagearea.scrollHeight">
 
           <div id="messagefeed" class="mb-auto p-1">
-            <ng-container *ngFor="let message of messages">
+            <ng-container *ngFor="let message of conversation.messages">
               <p>
                 <strong>{{message.sender}}: </strong>{{message.text}}
               </p>
